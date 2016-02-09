@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Usage: jiff liquidprompt-install
+# Summary: Install bash liquidprompt
+
+source stdlib
+
+set_default  "WorkingDir"  "/opt/app/avwobt4"
+set_default  "RepoUri"     "bertrand:tmp"
+set_default  "Filename"    "liquidprompt.tar.gz"
+
+main () {
+  exit_if_is_file "lib/liquidprompt/liquidprompt"
+  install_files
+}
+
+install_files () {
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
+  rm "${Filename}"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+run_in_directory "${WorkingDir}" "main" "${@}"

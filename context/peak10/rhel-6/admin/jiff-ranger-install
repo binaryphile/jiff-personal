@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Usage: jiff ranger
+# Summary: Install ranger file manager
+
+source stdlib
+
+RangerVersion="${RangerVersion:-1.6.1}"
+
+main () {
+  exit_if_is_on_path "ranger"
+  install_ranger
+}
+
+install_ranger () {
+  wget "https://downloads.accns.com/ranger/ranger-${RangerVersion}.tar.gz"
+  tar xzf "ranger-${RangerVersion}.tar.gz"
+  cd "ranger-${RangerVersion}"
+  sudo make install
+  cd ..
+  sudo rm -rf "ranger-${RangerVersion}"
+  rm "ranger-${RangerVersion}.tar.gz"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+run_in_directory "${HOME}/tmp" "main" "${@}"

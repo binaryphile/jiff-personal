@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Usage: jiff ag-install
+
+source stdlib
+source distrolib
+
+AgVersion="${AgVersion:-0.31.0}"
+
+read -d "" -a Prereqs <<EOM || true
+pkgconfig
+automake
+gcc
+zlib-devel
+pcre-devel
+xz-devel
+EOM
+
+main () {
+  exit_if_is_on_path "ag"
+  install_prereqs
+  install_ag
+}
+
+install_ag () {
+  wget "https://downloads.accns.com/the_silver_searcher-${AgVersion}.tar.gz"
+  tar xzf "the_silver_searcher-${AgVersion}.tar.gz"
+  cd "the_silver_searcher-${AgVersion}"
+  ./configure
+  make
+  sudo make install
+  cd ..
+  rm -rf "the_silver_searcher-${AgVersion}"
+}
+
+install_prereqs () {
+  local prereq
+
+  for prereq in "${Prereqs[@]}"; do
+    install_package "${prereq}"
+  done
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+run_in_directory "${HOME}/tmp" "main" "${@}"

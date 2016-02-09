@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Usage: jiff ag-install
+
+source stdlib
+
+WorkingDir="${WorkingDir:-/opt/app/avwobt4}"
+RepoUri="${RepoUri:-bertrand:tmp}"
+Filename="${Filename:-ag-static-att.tar.gz}"
+
+main () {
+  exit_if_is_on_path "ag"
+  install_ag
+}
+
+install_ag () {
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
+  rm "${Filename}"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+run_in_directory "${WorkingDir}" "main" "${@}"
