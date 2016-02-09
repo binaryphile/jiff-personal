@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# Usage: jiff show-mysql-slave
+
+source stdlib
+
+declare -r DefaultsFile=/opt/app/avwobt4/etc/mysql/replication.cnf
+declare -r ExpectedMasterHost=135.89.20.86
+declare -r ExpectedMasterPort=3306
+
+declare -r SlaveHost=135.89.175.30
+declare -r SlavePort=3306
+
+declare -r MysqlCommand="mysql --defaults-extra-file=${DefaultsFile} "
+declare -r MasterCommand="$MysqlCommand -h $ExpectedMasterHost -P $ExpectedMasterPort"
+declare -r SlaveCommand="$MysqlCommand -h $SlaveHost -P $SlavePort"
+
+main () {
+  local error_count
+  local errors
+  local pos_difference
+  local count
+
+  mkdir -p "${HOME}/tmp"
+  cd "${HOME}/tmp"
+  $MasterCommand -e 'SHOW MASTER STATUS\G' > mstatus
+  $SlaveCommand -e 'SHOW SLAVE STATUS\G' > sstatus
+
+  MasterBinlog=$(extract_value mstatus File )
+  MasterPosition=$(extract_value mstatus Position )
+
+  MasterHost=$(extract_value sstatus Master_Host)
+  MasterPort=$(extract_value sstatus Master_Port)
+  MasterLogFile=$(extract_value sstatus Master_Log_File)
+  ReadMasterLogPos=$(extract_value sstatus Read_Master_Log_Pos)
+  SlaveIORunning=$(extract_value sstatus Slave_IO_Running)
+  SlaveSQLRunning=$(extract_value sstatus Slave_SQL_Running)
+
+  error_count=0
+  if [[ "$MasterHost" != "$ExpectedMasterHost" ]]; then
+    errors[$error_count]="the slave is not replicating from the host that it is supposed to"
+    error_count=$(($error_count+1))
+  fi
+
+  if [[ "$MasterPort" != "$ExpectedMasterPort" ]]; then
+    errors[$error_count]="the slave is not replicating from the host that it is supposed to"
+    error_count=$(($error_count+1))
+  fi
+
+  if [[ "$MasterBinlog" != "$MasterLogFile" ]]; then
+    errors[$error_count]="master binlog ($MasterBinlog) and MasterLogFile ($MasterLogFile) differ"
+    error_count=$(($error_count+1))
+  fi
+
+  pos_difference=$(echo ${MasterPosition}-$ReadMasterLogPos|bc)
+
+  if [[ $pos_difference -gt 1000 ]]; then
+    errors[$error_count]="The slave is lagging behind of $pos_difference"
+    error_count=$(($error_count+1))
+  fi
+
+  if [[ "$SlaveIORunning" == "No" ]]; then
+    errors[$error_count]="Replication is stopped"
+    error_count=$(($error_count+1))
+  fi
+
+  if [[ "$SlaveSQLRunning" == "No" ]]; then
+    errors[$error_count]="Replication (SQL) is stopped"
+    error_count=$(($error_count+1))
+  fi
+
+  if [[ $error_count -gt 0 ]]; then
+    while [ "$count" != "$error_count" ]
+    do
+        echo "${errors[$CNT]}"
+        count=$(($count+1))
+    done
+  else
+    echo "Replication OK"
+    printf "file: %s at %'d\n" $MasterLogFile  $ReadMasterLogPos
+  fi
+  rm mstatus sstatus
+}
+
+function extract_value {
+  grep -w "${2}" "${1}" | awk '{print $2}'
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"

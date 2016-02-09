@@ -1,0 +1,3 @@
+[vim]
+name = "vim-nox"
+vimrc = "/etc/vim"

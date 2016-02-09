@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Usage: jiff install-ag
+
+source stdlib
+
+declare -r RepoUri="bertrand:tmp"
+declare -r Filename="ag-static-att.tar.gz"
+
+main () {
+  exit_if_is_on_path "ag"
+  install_ag
+}
+
+install_ag () {
+  mkdir -p "${HOME}/tmp"
+  cd "${HOME}/tmp"
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
+  rm "${Filename}"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"
