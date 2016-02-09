@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Usage: jiff bashrc-install
+# Summary: Install bash init files
+
+source stdlib
+
+declare -r WorkingDir="/opt/app/avwobt4"
+declare -r RepoUri="bertrand:tmp"
+declare -r Filename="bashrc.tar.gz"
+
+main () {
+  cd "${WorkingDir}"
+  exit_if_is_file "share/bash/bashrc"
+  install_files
+}
+
+install_files () {
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
+  rm "${Filename}"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"
