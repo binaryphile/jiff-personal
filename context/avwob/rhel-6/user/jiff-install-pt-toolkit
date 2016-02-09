@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Usage: jiff install-pt-toolkit
+
+source stdlib
+
+declare -r RepoUri="bertrand:tmp"
+declare -r PtVersion="2.2.17"
+declare -r Filename="pt-toolkit-${PtVersion}-avwob.tar.gz"
+declare -r InstallDir="/opt/app/avwobt4"
+
+main () {
+  exit_if_is_on_path "pt-heartbeat"
+  install_pt
+}
+
+install_pt () {
+  cd "${InstallDir}"
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
+  rm "${Filename}"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"

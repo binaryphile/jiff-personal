@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+
+GitVersion=2.7.4
+
+main () {
+  ! [[ -d "/opt/basher" ]] || exit 0
+  which git >/dev/null || install_git
+  vc_slash
+  install_basher
+  install_jiff
+  success_message
+}
+
+install_basher () {
+  cd /etc/profile.d
+  cat <<EOM | sudo tee basher.sh
+_myid="\$(id -u)"
+if [[ "\${_myid}" -ne 0 ]] && [[ "\${_myid}" -ne 10000 ]] && [[ -z "\${BASHER_ROOT}" ]]; then
+  export BASHER_ROOT=/opt/basher
+  export PATH="\${PATH}:/opt/basher/bin"
+  eval "\$(basher init -)"
+fi
+EOM
+  git add --force basher.sh
+  git commit --message "basher"
+  cd /opt
+  sudo mkdir basher
+  sudo chown "${USER}:prodadm" basher
+  chmod g+rwxs basher
+  setfacl -m d:g::rwx basher
+  git clone git://github.com/basherpm/basher
+  cd basher/libexec
+  sed -i -e 's|${bin_path}:${PATH}|${PATH}:${bin_path}|' basher
+  sed -i -e 's|$BASHER_ROOT/cellar/bin:$PATH|$PATH:$BASHER_ROOT/cellar/bin|' -e 's|$BASHER_ROOT/cellar/bin $PATH|$PATH $BASHER_ROOT/cellar/bin|' basher-init
+  sed -i -e 's|https://github.com/|git@github.com:|' -e 's|--depth=1||' basher-_clone
+}
+
+install_git () {
+  read -d "" -a prereqs <<EOM || true
+gcc
+curl-devel
+expat-devel
+gettext-devel
+openssl-devel
+perl-devel
+zlib-devel
+perl-Error
+EOM
+  for prereq in "${prereqs[@]}"; do
+    sudo yum -y install "${prereq}"
+  done
+  mkdir -p "${HOME}/tmp"
+  cd "${HOME}/tmp"
+  curl -sL "https://downloads.accns.com/git/git-${GitVersion}.tar.gz" | tar xzf -
+  cd "git-${GitVersion}"
+  make configure
+  ./configure --prefix=/usr
+  make all
+  sudo make install
+  cd ..
+  rm -rf "git-${GitVersion}"
+}
+
+install_jiff () {
+  export BASHER_ROOT=/opt/basher
+  /opt/basher/bin/basher install binaryphile/jiff-personal
+}
+
+success_message () {
+  cat <<EOM
+
+Note: If you are using bash as your shell, run "exec bash" to load jiff
+onto your path.  Otherwise follow the basher instructions for loading
+basher into your shell's environment then source those files or
+re-login.
+
+You'll also want to run "jiff context" to set your context.
+EOM
+}
+
+vc_slash () {
+  cd / >/dev/null
+  sudo mkdir -p .git
+  sudo chown "${USER}:prodadm" .git
+  chmod g+rwxs .git
+  setfacl -m d:g::rwx .git
+  sudo touch .gitignore
+  sudo chown "${USER}:prodadm" .gitignore
+  chmod g+rw .gitignore
+  cat <<EOM > .gitignore
+*
+id_*
+*.pem
+*.pfx
+*.key
+*.key.*
+EOM
+  git init
+  git add -f .gitignore
+  git config --global user.name "Administrative User"
+  git config --global user.email aview@accelerated.com
+  git commit -m "initial commit"
+}
+
+return 0 2>/dev/null || true
+set -o errexit
+set -o nounset
+set -o pipefail
+main "${@}"

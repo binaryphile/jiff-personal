@@ -1,1 +1,44 @@
-../../../binaryphile/jiff-core/libexec/jiff-add-task
+#!/usr/bin/env bash
+# Usage: jiff add-task
+
+source "${_JIFF_ROOT}/../../binaryphile/jiff-core/libexec/jiff-add-task"
+
+push_core_task () {
+  # TODO: check and see if we're on master on jiff-personal first. commit and push jiff-core.  mv jiff-personal link to jiff instead of creating and rm'ing?
+  filename="jiff-${1}"
+  cd "${_JIFF_ROOT}/../jiff/libexec"
+  make_symlink "${filename}" "../../../binaryphile/jiff-core/libexec/${filename}"
+  git add --force "${filename}"
+  git commit -m "automated commit"
+  git push
+  cd "${_JIFF_ROOT}/libexec"
+  rm "${filename}"
+  git fetch upstream
+  git rebase upstream/master
+  git push --force
+  git checkout develop
+  git merge master
+  git push
+  git checkout master
+}
+
+set_taskdir () {
+  case "${1}" in
+    "role" )
+      echo "../role/current"
+      ;;
+    "default" )
+      echo ""
+      ;;
+    "core" )
+      echo "../../../binaryphile/jiff-core/libexec"
+      ;;
+    * )
+      echo "../context/current"
+  esac
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"
+is_not_match "${2:-}" "core" || push_core_task "${1}"

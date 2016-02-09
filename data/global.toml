@@ -1,0 +1,26 @@
+[hosts]
+armt = [
+  "armt-app-db-a",
+  "armt-app-db-b",
+  ]
+avwob = [
+  "mesaview1",
+  "mesaview1t",
+  "duraview1",
+  ]
+digitalocean = [
+  "pinch",
+  ]
+office = [
+  "bertrand",
+  "dell",
+  ]
+peak10 = [
+  "mcp",
+  "web-prod-001",
+  "aview-prod-001",
+  "mysql-prod-001",
+  "web-dev-001",
+  "aview-dev-001",
+  "mysql-dev-001",
+  ]
