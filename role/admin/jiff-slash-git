@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Usage: jiff slash-git [admin group (default: prodadm)]
+# Summary: Set up git repository in the root filesystem
+
+source stdlib
+
+main () {
+  exit_if_is_directory "/.git"
+  jiff install git
+  push_dir "/"
+  make_group_dir ".git" "${1:-}"
+  git init
+  make_group_file ".gitignore" "${1:-}"
+  cat <<EOM > .gitignore
+*
+id_*
+*.pem
+*.pfx
+*.key
+*.key.*
+EOM
+  git add --force .gitignore
+  git commit --message "initial commit"
+  pop_dir
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"
