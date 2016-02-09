@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Usage: jiff vim-config
+# Summary: Configure vim
+
+source stdlib
+
+declare -r RepoUri="git@github.com:binaryphile/dot_vim"
+declare -r RepoBranch="essential"
+declare -r InstallDir=".vim"
+
+main () {
+  exit_if_is_directory "${InstallDir}"
+  jiff install git
+  cd "${HOME}"
+  git clone --branch="${RepoBranch}" "${RepoUri}" "${InstallDir}"
+  make_symlink ".vimrc" "${InstallDir}/vimrc"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"

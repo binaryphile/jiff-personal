@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Usage: jiff provide-remote
+# Summary: A sample task template
+# Help: Here is a more full explanation.
+# It can go multiple lines
+
+source stdlib
+
+main () {
+  ps aux | grep -q NfR
+  [[ "$?" == 0 ]] || exit 0
+  ssh -NfR 12346:localhost:12346 mesaview1
+  ssh -NfR 12346:localhost:12346 mesaview1t
+  ssh -NfR 12346:localhost:12346 duraview1
+  ssh -NfR 12345:localhost:22 mesaview1
+  ssh -NfR 12345:localhost:22 mesaview1t
+  ssh -NfR 12345:localhost:22 duraview1
+  ssh -NfL 12346:github.com:22 localhost
+  ssh -NfR 12345:localhost:22 pinch
+}
+
+return 2>/dev/null || true
+strict_mode on
+main "{@}"

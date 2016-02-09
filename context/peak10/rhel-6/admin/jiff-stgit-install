@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Usage: jiff stgit
+# Summary: Install stacked git
+
+source stdlib
+
+main () {
+  exit_if_is_on_path "stg"
+  jiff install git
+  install_stg
+}
+
+install_stg () {
+  mkdir -p "${HOME}/tmp"
+  cd "${HOME}/tmp"
+  mkdir stgit
+  cd stgit
+  git archive --format=tar --remote=git://repo.or.cz/stgit.git HEAD | tar xf -
+  make prefix=/usr all
+  sudo make prefix=/usr install
+  cd ..
+  rm -rf stgit
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"
