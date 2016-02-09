@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Usage: jiff vim-install
+# Summary: Install personal vim as "myvim"
+
+source stdlib
+
+RepoUri="${RepoUri:-bertrand:tmp}"
+Filename="vim-static.tar.gz"
+WorkingDir="${WorkingDir:-/opt/app/avwobt4/lib}"
+
+main () {
+  install_avim
+  jiff config vim
+}
+
+install_avim () {
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
+  # edit the makefile then make install. don't delete the source
+  # directory
+  rm "${Filename}"
+}
+
+return 2>/dev/null || true
+strict_mode on
+run_in_directory "${WorkingDir}" "main" "${@}"

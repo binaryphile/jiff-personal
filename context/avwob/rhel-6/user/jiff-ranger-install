@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Usage: jiff ranger-install
+
+source stdlib
+
+WorkingDir="${WorkingDir:-${HOME}/tmp}"
+RepoUri="${RepoUri:-bertrand:tmp}"
+RangerVer="${RangerVer:-1.6.1}"
+RangerDir="${RangerDir:-ranger-${RangerVer}}"
+Filename="${Filename:-ranger-${RangerVer}.tar.gz}"
+
+main () {
+  exit_if_is_on_path "ranger"
+  install_ranger
+}
+
+install_ranger () {
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
+  cd "${RangerDir}"
+  python setup.py install --user
+  cd ..
+  rm -rf "${RangerDir}"
+  rm "${Filename}"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+run_in_directory "${HOME}/tmp" "main" "${@}"
