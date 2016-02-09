@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Usage: jiff git-install
+
+exit 0

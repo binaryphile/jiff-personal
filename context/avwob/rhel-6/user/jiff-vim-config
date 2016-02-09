@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Usage: jiff vim-config
+# Summary: Configure vim
+
+source stdlib
+
+main () {
+  exit_if_is_directory ".vim"
+  jiff install git
+  git clone --branch=essential git@github.com:binaryphile/dot_vim .vim
+  make_symlink ".vimrc" ".vim/vimrc"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+run_in_directory "${HOME}" "main" "${@}"

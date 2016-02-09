@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Usage: jiff ag-install
+
+source stdlib
+
+main () {
+  exit_if_is_on_path "ag"
+  scp bertrand:tmp/ag-static-att.tar.gz .
+  tar xzf ag-static-att.tar.gz
+  rm ag-static-att.tar.gz
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+run_in_directory "${HOME}/.local" "main" "${@}"

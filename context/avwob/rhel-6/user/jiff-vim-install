@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Usage: jiff vim-install
+# Summary: Install personal vim as "myvim"
+
+source stdlib
+
+main () {
+  exit_if_is_on_path "myvim"
+  install_myvim
+  jiff config vim
+}
+
+install_myvim () {
+  scp bertrand:tmp/vim-static.tar.gz .
+  tar xzf vim-static.tar.gz
+  cd vim
+  make install
+  cd ..
+  rm vim-static.tar.gz
+}
+
+return 2>/dev/null || true
+strict_mode on
+run_in_directory "${HOME}/.local/lib" "main" "${@}"

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Usage: jiff liquidprompt-install
+# Summary: Install bash liquidprompt
+
+source stdlib
+
+main () {
+  exit_if_is_file "/etc/profile.d/liquidprompt.sh"
+  jiff slash-git
+  install_files
+  # TODO: skip for rhel-6
+  is_not_file "/etc/bash.bashrc" || update_bashrc
+}
+
+install_files () {
+  cd /etc/profile.d
+  sudo wget "https://raw.githubusercontent.com/binaryphile/dotfiles/master/liquidprompt/admin/liquidprompt.sh"
+  sudo chmod 755 liquidprompt.sh
+  git add --force liquidprompt.sh
+  cd ..
+  sudo wget "https://raw.githubusercontent.com/binaryphile/dotfiles/master/liquidprompt/admin/liquidpromptrc"
+  git add --force liquidpromptrc
+  cd /usr/share
+  sudo mkdir -p liquidprompt
+  cd liquidprompt
+  sudo wget "https://raw.githubusercontent.com/binaryphile/dotfiles/master/liquidprompt/liquid.theme"
+  git add --force liquid.theme
+  git commit --message "add liquidprompt"
+}
+
+update_bashrc () {
+  cd /etc
+  git add --force bash.bashrc
+  git commit --message "add initial bash.bashrc"
+  cat <<EOM | sudo tee -a bash.bashrc
+
+for i in /etc/profile.d/*.sh; do
+    if [ -r "\$i" ]; then
+        if [ "\$PS1" ]; then
+            . "\$i"
+        else
+            . "\$i" >/dev/null 2>&1
+        fi
+    fi
+done
+EOM
+  git add --force bash.bashrc
+  git commit --message "bash.bashrc liquidprompt"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+run_in_directory "/tmp" "main" "${@}"
