@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Usage: jiff jiff-install
+
+source stdlib
+source uilib
+
+declare -r InstallDir="/opt/app/avwobt4"
+
+main () {
+  cd "${HOME}"
+  exit_if_is_file "original.bashrc"
+  install_files
+  success_message
+  exec /bin/bash
+}
+
+install_files () {
+  choose "y" "This will backup and replace your bashrc and bash_profile...Continue? (Y/n) " || exit 1
+  is_not_file ".bashrc" || mv .bashrc original.bashrc
+  is_not_file ".bash_profile" || mv .bash_profile original.bash_profile
+  cp "${InstallDir}/share/bash/bashrc" .bashrc
+  cp "${InstallDir}/share/bash/bash_profile" .bash_profile
+  mkdir -p "${HOME}/.config"
+  cd "${HOME}/.config"
+  ln -sf "${InstallDir}/share/liquidprompt/liquidpromptrc"
+}
+
+success_message () {
+  cat <<EOM
+
+jiff has been configured and your files are backed up as
+"original.bashrc" and "original.bash_profile".
+
+EOM
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"
