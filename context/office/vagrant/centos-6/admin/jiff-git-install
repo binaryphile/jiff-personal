@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+source stdlib
+source distrolib
+
+main () {
+  install_package "git2u"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"

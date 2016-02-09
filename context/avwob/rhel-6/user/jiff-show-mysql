@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Usage: jiff show-mysql
+
+source stdlib
+source jifflib
+
+Verb="show-mysql"
+
+main () {
+  run_subtask "${Verb}" "${@}"
+}
+
+usage () {
+  echo "Usage: jiff ${Verb} TASK"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"
