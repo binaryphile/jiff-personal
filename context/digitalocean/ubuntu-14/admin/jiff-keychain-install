@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Usage: jiff keychain-install
+
+source stdlib
+
+read -d "" BashrcText <<EOM
+
+/usr/bin/keychain --quiet "\${HOME}/.ssh/id_rsa"
+source "\${HOME}/.keychain/\$(hostname)-sh"
+EOM
+
+main () {
+  exit_if_is_on_path "keychain"
+  install_package "keychain"
+  grep -q keychain .bashrc || update_bashrc
+}
+
+update_bashrc () {
+  cd "${HOME}"
+  echo ${BashrcText} >> .bashrc
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"

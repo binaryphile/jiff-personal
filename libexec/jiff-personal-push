@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Usage: jiff personal-push
+
+source stdlib
+
+strict_mode on
+
+jiff install git
+push_dir "${HOME}/binaryphile/jiff-personal"
+git fetch upstream
+git rebase upstream/master
+git push -f
+pop_dir

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Usage: jiff vim-install
+# Summary: Install system vim
+
+source stdlib
+source distrolib
+
+main () {
+  local vim_package_name
+
+  if is_not_on_path "vim"; then
+    vim_package_name="$(jiff _data "vim.name")"
+    install_package "$vim_package_name"
+  fi
+  jiff config vim
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"

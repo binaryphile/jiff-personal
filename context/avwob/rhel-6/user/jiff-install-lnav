@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Usage: jiff install-lnav
+# Summary: Install the lnav logfile navigator
+
+source stdlib
+
+declare -r InstallDir="/opt/app/avwobt4/bin"
+declare -r RepoUri="bertrand:tmp"
+declare -r LnavVersion="0.8.0"
+declare -r LnavDir="lnav-${LnavVersion}"
+declare -r Filename="${LnavDir}-linux-64bit.tar.gz"
+
+main () {
+  exit_if_is_on_path "lnav"
+  install_lnav
+}
+
+install_lnav () {
+  mkdir -p "${HOME}/tmp"
+  cd "${HOME}/tmp"
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
+  cd "${LnavDir}"
+  cp lnav "${InstallDir}"
+  cd ..
+  rm "${Filename}"
+  rm -rf "${LnavDir}"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"
