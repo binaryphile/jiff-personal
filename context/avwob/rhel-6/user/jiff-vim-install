@@ -4,21 +4,24 @@
 
 source stdlib
 
+RepoUri="${RepoUri:-bertrand:tmp}"
+Filename="vim-static.tar.gz"
+WorkingDir="${WorkingDir:-/opt/app/avwobt4/lib}"
+
 main () {
-  exit_if_is_on_path "myvim"
   install_myvim
   jiff config vim
 }
 
 install_myvim () {
-  scp bertrand:tmp/vim-static.tar.gz .
-  tar xzf vim-static.tar.gz
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
   cd vim
   make install
   cd ..
-  rm vim-static.tar.gz
+  rm "${Filename}"
 }
 
 return 2>/dev/null || true
 strict_mode on
-run_in_directory "${HOME}/.local/lib" "main" "${@}"
+run_in_directory "${WorkingDir}" "main" "${@}"

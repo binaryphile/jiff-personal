@@ -3,13 +3,20 @@
 
 source stdlib
 
+WorkingDir="${WorkingDir:-/opt/app/avwobt4}"
+RepoDir="${RepoDir:-bertrand:tmp}"
+Filename="${Filename:-ag-static-att.tar.gz}"
+
 main () {
-  exit_if_is_on_path "ag"
-  scp bertrand:tmp/ag-static-att.tar.gz .
-  tar xzf ag-static-att.tar.gz
-  rm ag-static-att.tar.gz
+  install_ag
+}
+
+install_ag () {
+  scp "${RepoDir}/${Filename}" .
+  tar xzf "${Filename}"
+  rm "${Filename}"
 }
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "${HOME}/.local" "main" "${@}"
+run_in_directory "${WorkingDir}" "main" "${@}"

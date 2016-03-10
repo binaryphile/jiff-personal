@@ -3,23 +3,24 @@
 
 source stdlib
 
-strict_mode on
-
-RangerVersion="${RangerVersion:-1.6.1}"
+WorkingDir="${WorkingDir:-${HOME}/tmp}"
+RepoDir="${RepoDir:-bertrand/tmp}"
+RangerVer="${RangerVer:-1.6.1}"
+RangerDir="${RangerDir:-ranger-${RangerVer}}"
+Filename="${Filename:-ranger-${RangerVer}.tar.gz}"
 
 main () {
-  exit_if_is_on_path "ranger"
   install_ranger
 }
 
 install_ranger () {
-  scp "bertrand:tmp/ranger-${RangerVersion}.tar.gz" .
-  tar xzf "ranger-${RangerVersion}.tar.gz"
-  cd "ranger-${RangerVersion}"
+  scp "${RepoDir}/${Filename}" .
+  tar xzf "${Filename}"
+  cd "${RangerDir}"
   python setup.py install --user
   cd ..
-  rm -rf "ranger-${RangerVersion}"
-  rm "ranger-${RangerVersion}.tar.gz"
+  rm -rf "${RangerDir}"
+  rm "${Filename}"
 }
 
 return 0 2>/dev/null || true

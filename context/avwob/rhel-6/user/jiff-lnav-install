@@ -4,24 +4,27 @@
 
 source stdlib
 
+WorkingDir="${WorkingDir:-${HOME}/tmp}"
+InstallDir="${Dir:-/opt/app/avwobt4/bin}"
+RepoDir="${RepoDir:-bertrand:tmp}"
 LnavVersion="${LnavVersion:-0.8.0}"
-LnavDirectory="lnav-${LnavVersion}"
+LnavDir="lnav-${LnavVersion}"
+Filename="${Filename:-${LnavDir}-linux-64bit.tar.gz}"
 
 main () {
-  exit_if_is_on_path "lnav"
   install_lnav
 }
 
 install_lnav () {
-  scp bertrand:tmp/${LnavDirectory}-linux-64bit.tar.gz .
-  tar xzf "${LnavDirectory}-linux-64bit.tar.gz"
-  cd "${LnavDirectory}"
-  cp lnav "${HOME}/.local/bin"
+  scp "${RepoDir}/${Filename}" .
+  tar xzf "${Filename}"
+  cd "${LnavDir}"
+  cp lnav "${InstallDir}"
   cd ..
-  rm "${LnavDirectory}-linux-64bit.tar.gz"
-  rm -rf "${LnavDirectory}"
+  rm "${Filename}"
+  rm -rf "${LnavDir}"
 }
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "${HOME}/tmp" "main" "${@}"
+run_in_directory "${WorkingDir}" "main" "${@}"
