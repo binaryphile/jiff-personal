@@ -16,9 +16,6 @@ main () {
 install_myvim () {
   scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
-  cd vim
-  make install
-  cd ..
   rm "${Filename}"
 }
 

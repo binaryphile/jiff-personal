@@ -4,7 +4,7 @@
 source stdlib
 
 WorkingDir="${WorkingDir:-${HOME}/tmp}"
-RepoUri="${RepoUri:-bertrand/tmp}"
+RepoUri="${RepoUri:-bertrand:tmp}"
 RangerVer="${RangerVer:-1.6.1}"
 RangerDir="${RangerDir:-ranger-${RangerVer}}"
 Filename="${Filename:-ranger-${RangerVer}.tar.gz}"

@@ -5,7 +5,7 @@
 source stdlib
 
 WorkingDir="${WorkingDir:-${HOME}/tmp}"
-RepoUri="${RepoUri:-git@github.com:binaryphile/stgit.git}"
+RepoUri="${RepoUri:-git@github.com:binaryphile/stgit}"
 InstallDir="${InstallDir:-/opt/app/avwobt4}"
 
 main () {
