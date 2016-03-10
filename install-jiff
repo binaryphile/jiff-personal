@@ -11,8 +11,8 @@ eval "\$(basher init -)"
 EOM
   cd .basher/libexec
   sed -i -e 's|${bin_path}:${PATH}|${PATH}:${bin_path}|' basher
-  sed -i -e 's|$BASHER_ROOT/cellar/bin:$PATH|$PATH:$BASHER_ROOT/cellar/bin|' -e 's|$BASHER_ROOT/cellar/bin $PATH|$PATH $BASHER_ROOT/cellar/bin|' basher-init
-  sed -i -e 's|https://github.com/|git@github.com:|' basher-_clone
+  sed -i -e 's|$BASHER_ROOT/cellar/bin:$PATH|$PATH:$BASHER_ROOT/cellar/bin|' -e 's|PATH $BASHER_ROOT/cellar/bin $PATH|PATH $PATH $BASHER_ROOT/cellar/bin|' basher-init
+  sed -i -e 's| --depth=1||' -e 's|https://github.com/|git@github.com:|' basher-_clone
   "${HOME}/.basher/bin/basher" install binaryphile/jiff-personal
 
   if [[ "${SHELL}" == "/bin/bash" ]]; then

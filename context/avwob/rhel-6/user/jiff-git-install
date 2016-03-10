@@ -1,4 +1,23 @@
 #!/usr/bin/env bash
 # Usage: jiff git-install
 
-exit 0
+source stdlib
+
+WorkingDir="${WorkingDir:-/opt/app/avwobt4}"
+RepoUri="${RepoUri:-bertrand:tmp}"
+GitVer="${GitVer:-2.7.0}"
+Filename="${Filename:-git-${GitVer}-static-att.tar.gz}"
+
+main () {
+  install_git
+}
+
+install_git () {
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
+  rm "${Filename}"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+run_in_directory "${WorkingDir}" "main" "${@}"
