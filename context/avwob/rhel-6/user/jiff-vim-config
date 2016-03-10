@@ -4,13 +4,18 @@
 
 source stdlib
 
+WorkingDir="${WorkingDir:-${HOME}}"
+RepoUri="${RepoUri:-git@github.com:binaryphile/dot_vim}"
+RepoBranch="${RepoBranch:-essential}"
+InstallDir="${InstallDir:-.vim}"
+
 main () {
-  exit_if_is_directory ".vim"
+  exit_if_is_directory "${InstallDir}"
   jiff install git
-  git clone --branch=essential git@github.com:binaryphile/dot_vim .vim
-  make_symlink ".vimrc" ".vim/vimrc"
+  git clone --branch="${RepoBranch}" "${RepoUri}" "${InstallDir}"
+  make_symlink ".vimrc" "${InstallDir}/vimrc"
 }
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "${HOME}" "main" "${@}"
+run_in_directory "${WorkingDir}" "main" "${@}"

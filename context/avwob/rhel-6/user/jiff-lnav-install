@@ -6,7 +6,7 @@ source stdlib
 
 WorkingDir="${WorkingDir:-${HOME}/tmp}"
 InstallDir="${Dir:-/opt/app/avwobt4/bin}"
-RepoDir="${RepoDir:-bertrand:tmp}"
+RepoUri="${RepoUri:-bertrand:tmp}"
 LnavVersion="${LnavVersion:-0.8.0}"
 LnavDir="lnav-${LnavVersion}"
 Filename="${Filename:-${LnavDir}-linux-64bit.tar.gz}"
@@ -16,7 +16,7 @@ main () {
 }
 
 install_lnav () {
-  scp "${RepoDir}/${Filename}" .
+  scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
   cd "${LnavDir}"
   cp lnav "${InstallDir}"

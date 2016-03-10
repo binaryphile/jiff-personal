@@ -4,7 +4,7 @@
 source stdlib
 
 WorkingDir="${WorkingDir:-${HOME}/tmp}"
-RepoDir="${RepoDir:-bertrand/tmp}"
+RepoUri="${RepoUri:-bertrand/tmp}"
 RangerVer="${RangerVer:-1.6.1}"
 RangerDir="${RangerDir:-ranger-${RangerVer}}"
 Filename="${Filename:-ranger-${RangerVer}.tar.gz}"
@@ -14,7 +14,7 @@ main () {
 }
 
 install_ranger () {
-  scp "${RepoDir}/${Filename}" .
+  scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
   cd "${RangerDir}"
   python setup.py install --user

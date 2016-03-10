@@ -4,7 +4,7 @@
 source stdlib
 
 WorkingDir="${WorkingDir:-/opt/app/avwobt4}"
-RepoDir="${RepoDir:-bertrand:tmp}"
+RepoUri="${RepoUri:-bertrand:tmp}"
 Filename="${Filename:-ag-static-att.tar.gz}"
 
 main () {
@@ -12,7 +12,7 @@ main () {
 }
 
 install_ag () {
-  scp "${RepoDir}/${Filename}" .
+  scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
   rm "${Filename}"
 }
