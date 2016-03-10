@@ -9,13 +9,15 @@ Filename="vim-static.tar.gz"
 WorkingDir="${WorkingDir:-/opt/app/avwobt4/lib}"
 
 main () {
-  install_myvim
+  install_avim
   jiff config vim
 }
 
-install_myvim () {
+install_avim () {
   scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
+  # edit the makefile then make install. don't delete the source
+  # directory
   rm "${Filename}"
 }
 

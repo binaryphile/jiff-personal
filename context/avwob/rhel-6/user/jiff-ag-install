@@ -8,6 +8,7 @@ RepoUri="${RepoUri:-bertrand:tmp}"
 Filename="${Filename:-ag-static-att.tar.gz}"
 
 main () {
+  exit_if_is_on_path "ag"
   install_ag
 }
 

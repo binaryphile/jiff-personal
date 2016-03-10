@@ -10,6 +10,7 @@ RangerDir="${RangerDir:-ranger-${RangerVer}}"
 Filename="${Filename:-ranger-${RangerVer}.tar.gz}"
 
 main () {
+  exit_if_is_on_path "ranger"
   install_ranger
 }
 

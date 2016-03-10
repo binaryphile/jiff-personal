@@ -12,6 +12,7 @@ LnavDir="lnav-${LnavVersion}"
 Filename="${Filename:-${LnavDir}-linux-64bit.tar.gz}"
 
 main () {
+  exit_if_is_on_path "lnav"
   install_lnav
 }
 

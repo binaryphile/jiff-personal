@@ -9,6 +9,7 @@ GitVer="${GitVer:-2.7.0}"
 Filename="${Filename:-git-${GitVer}-static-att.tar.gz}"
 
 main () {
+  exit_if_is_on_path "git"
   install_git
 }
 
