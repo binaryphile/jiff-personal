@@ -22,17 +22,6 @@ install_files () {
   cp share/liquidprompt/liquidpromptrc "${ConfigDir}"
 }
 
-update_bashrc () {
-  echo "This will replace your bashrc and bash_profile...Continue? (Y/n)"
-  read_input input
-  yes || exit 1
-  cd "${HOME}"
-  mv .bashrc original.bashrc
-  mv .bash_profile original.bash_profile
-  cp "${InstallDir}/share/bash/bashrc" .bashrc
-  cp "${InstallDir}/share/bash/bash_profile" .bash_profile
-}
-
 return 0 2>/dev/null || true
 strict_mode on
 run_in_directory "${WorkingDir}" "main" "${@}"
