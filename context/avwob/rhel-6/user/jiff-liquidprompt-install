@@ -19,7 +19,7 @@ install_files () {
   tar xzf "${Filename}"
   rm "${Filename}"
   mkdir -p "${ConfigDir}"
-  cp share/liquidprompt/liquidpromptrc "${ConfigDir}"
+  is_file "${ConfigDir}/liquidpromptrc" || cp share/liquidprompt/liquidpromptrc "${ConfigDir}"
 }
 
 return 0 2>/dev/null || true
