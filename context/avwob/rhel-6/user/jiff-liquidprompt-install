@@ -7,7 +7,6 @@ source stdlib
 set_default  "WorkingDir"  "/opt/app/avwobt4"
 set_default  "RepoUri"     "bertrand:tmp"
 set_default  "Filename"    "liquidprompt.tar.gz"
-set_default  "ConfigDir"   "${HOME}/.config"
 
 main () {
   exit_if_is_file "lib/liquidprompt/liquidprompt"
@@ -18,8 +17,6 @@ install_files () {
   scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
   rm "${Filename}"
-  mkdir -p "${ConfigDir}"
-  is_file "${ConfigDir}/liquidpromptrc" || cp share/liquidprompt/liquidpromptrc "${ConfigDir}"
 }
 
 return 0 2>/dev/null || true
