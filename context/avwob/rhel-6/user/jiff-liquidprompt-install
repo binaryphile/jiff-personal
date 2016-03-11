@@ -4,10 +4,10 @@
 
 source stdlib
 
-set_default "WorkingDir" "/opt/app/avwobt4"
-set_default "RepoUri" "bertrand:tmp"
-set_default "Filename" "liquidprompt.tar.gz"
-set_default "ConfigDir" "${HOME}/.config"
+set_default  "WorkingDir"  "/opt/app/avwobt4"
+set_default  "RepoUri"     "bertrand:tmp"
+set_default  "Filename"    "liquidprompt.tar.gz"
+set_default  "ConfigDir"   "${HOME}/.config"
 
 main () {
   exit_if_is_file "lib/liquidprompt/liquidprompt"
