@@ -1,1 +1,24 @@
-../../../binaryphile/jiff-core/libexec/jiff-task-add
+#!/usr/bin/env bash
+# Usage: jiff task-add
+
+source "${_JIFF_ROOT}/../../binaryphile/jiff-core/libexec/jiff-task-add"
+
+set_taskdir () {
+  case "${1}" in
+    "role" )
+      echo "${_JIFF_ROOT}/role/current"
+      ;;
+    "default" )
+      echo "${_JIFF_ROOT}/libexec"
+      ;;
+    "core" )
+      echo "${_JIFF_ROOT}/../../binaryphile/jiff-core/libexec"
+      ;;
+    * )
+      echo "${_JIFF_ROOT}/context/current"
+  esac
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"
