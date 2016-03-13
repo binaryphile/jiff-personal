@@ -15,12 +15,20 @@ set_taskdir () {
       echo "../../../binaryphile/jiff-core/libexec"
       ;;
     * )
-      echo "${_JIFF_ROOT}/context/current"
+      echo "../context/current"
   esac
 }
 
 return 0 2>/dev/null || true
 strict_mode on
 main "${@}"
+cd "${_JIFF_ROOT}/../jiff/libexec"
+make_symlink "jiff-${2}" ../../../binaryphile/libexec/jiff-${2}"
+git add "jiff-${2}"
+git commit -m "automated commit"
+git push
 cd "${_JIFF_ROOT}"
-git add "libexec/jiff-${2}"
+git rm --force "libexec/jiff-${2}"
+git fetch upstream
+git rebase upstream/master
+git push --force
