@@ -19,6 +19,7 @@ main () {
 }
 
 install_basher () {
+  cd /etc/profile.d
   echo "${BashText}" | sudo tee basher.sh
   git add --force basher.sh
   git commit --message "basher"
@@ -34,4 +35,4 @@ install_basher () {
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "/etc/profile.d" "main" "${@}"
+main "${@}"

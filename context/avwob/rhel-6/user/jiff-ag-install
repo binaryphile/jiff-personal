@@ -3,9 +3,8 @@
 
 source stdlib
 
-WorkingDir="${WorkingDir:-/opt/app/avwobt4}"
-RepoUri="${RepoUri:-bertrand:tmp}"
-Filename="${Filename:-ag-static-att.tar.gz}"
+declare -r RepoUri="bertrand:tmp"
+declare -r Filename="ag-static-att.tar.gz"
 
 main () {
   exit_if_is_on_path "ag"
@@ -13,6 +12,8 @@ main () {
 }
 
 install_ag () {
+  mkdir -p "${HOME}/tmp"
+  cd "${HOME}/tmp"
   scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
   rm "${Filename}"
@@ -20,4 +21,4 @@ install_ag () {
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "${WorkingDir}" "main" "${@}"
+main "${@}"

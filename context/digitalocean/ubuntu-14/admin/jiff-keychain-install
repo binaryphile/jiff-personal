@@ -3,6 +3,12 @@
 
 source stdlib
 
+read -d "" BashrcText <<EOM
+
+/usr/bin/keychain --quiet "\${HOME}/.ssh/id_rsa"
+source "\${HOME}/.keychain/\$(hostname)-sh"
+EOM
+
 main () {
   exit_if_is_on_path "keychain"
   install_package "keychain"
@@ -10,13 +16,10 @@ main () {
 }
 
 update_bashrc () {
-  cat <<EOM >> .bashrc
-
-/usr/bin/keychain --quiet "\${HOME}/.ssh/id_rsa"
-source "\${HOME}/.keychain/\$(hostname)-sh"
-EOM
+  cd "${HOME}"
+  echo ${BashrcText} >> .bashrc
 }
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "${HOME}" "main" "${@}"
+main "${@}"

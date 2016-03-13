@@ -4,9 +4,8 @@
 
 source stdlib
 
-WorkingDir="${WorkingDir:-${HOME}/tmp}"
-RepoUri="${RepoUri:-git@github.com:binaryphile/stgit}"
-InstallDir="${InstallDir:-/opt/app/avwobt4}"
+declare -r RepoUri="git@github.com:binaryphile/stgit"
+declare -r InstallDir="/opt/app/avwobt4"
 
 main () {
   exit_if_is_on_path "stg"
@@ -15,6 +14,8 @@ main () {
 }
 
 install_stgit () {
+  mkdir -p "${HOME}/tmp"
+  cd "${HOME}/tmp"
   git clone "${RepoUri}"
   cd stgit
   make prefix="${InstallDir}" all
@@ -25,4 +26,4 @@ install_stgit () {
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "${WorkingDir}" "main" "${@}"
+main "${@}"

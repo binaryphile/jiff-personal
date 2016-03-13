@@ -12,6 +12,8 @@ main () {
 }
 
 install_ranger () {
+  mkdir -p "${HOME}/tmp"
+  cd "${HOME}/tmp"
   wget "https://downloads.accns.com/ranger/ranger-${RangerVersion}.tar.gz"
   tar xzf "ranger-${RangerVersion}.tar.gz"
   cd "ranger-${RangerVersion}"
@@ -23,4 +25,4 @@ install_ranger () {
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "${HOME}/tmp" "main" "${@}"
+main "${@}"

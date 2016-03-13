@@ -22,6 +22,8 @@ main () {
 }
 
 install_ag () {
+  mkdir -p "${HOME}/tmp"
+  cd "${HOME}/tmp"
   wget "https://downloads.accns.com/the_silver_searcher-${AgVersion}.tar.gz"
   tar xzf "the_silver_searcher-${AgVersion}.tar.gz"
   cd "the_silver_searcher-${AgVersion}"
@@ -42,4 +44,4 @@ install_prereqs () {
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "${HOME}/tmp" "main" "${@}"
+main "${@}"

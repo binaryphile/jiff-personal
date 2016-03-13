@@ -4,7 +4,6 @@
 
 source stdlib
 
-
 main () {
   exit_if_is_on_path "stg"
   jiff install git
@@ -12,6 +11,8 @@ main () {
 }
 
 install_stg () {
+  mkdir -p "${HOME}/tmp"
+  cd "${HOME}/tmp"
   mkdir stgit
   cd stgit
   git archive --format=tar --remote=git://repo.or.cz/stgit.git HEAD | tar xf -
@@ -23,4 +24,4 @@ install_stg () {
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "${HOME}/tmp" "main" "${@}"
+main "${@}"

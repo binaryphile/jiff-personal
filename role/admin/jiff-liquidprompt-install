@@ -50,4 +50,4 @@ EOM
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "/tmp" "main" "${@}"
+main "${@}"

@@ -6,6 +6,7 @@ source stdlib
 source distrolib
 
 main () {
+  cd /etc/vim
   is_not_file "vimrc.local" || exit 0
   jiff slash-git
   curl -sL "https://raw.githubusercontent.com/binaryphile/five-minutes-of-vim/master/vimrc" | sudo tee vimrc.local >/dev/null
@@ -15,4 +16,4 @@ main () {
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "/etc/vim" "main" "${@}"
+main "${@}"

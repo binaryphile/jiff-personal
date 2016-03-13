@@ -4,11 +4,12 @@
 
 source stdlib
 
-set_default  "WorkingDir"  "/opt/app/avwobt4"
-set_default  "RepoUri"     "bertrand:tmp"
-set_default  "Filename"    "liquidprompt.tar.gz"
+declare -r WorkingDir="/opt/app/avwobt4"
+declare -r RepoUri="bertrand:tmp"
+declare -r Filename="liquidprompt.tar.gz"
 
 main () {
+  cd "${WorkingDir}"
   exit_if_is_file "lib/liquidprompt/liquidprompt"
   install_files
 }
@@ -21,4 +22,4 @@ install_files () {
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "${WorkingDir}" "main" "${@}"
+main "${@}"

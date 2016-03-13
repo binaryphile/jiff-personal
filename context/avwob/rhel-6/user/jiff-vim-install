@@ -4,9 +4,9 @@
 
 source stdlib
 
-RepoUri="${RepoUri:-bertrand:tmp}"
-Filename="vim-static.tar.gz"
-WorkingDir="${WorkingDir:-/opt/app/avwobt4/lib}"
+declare -r RepoUri="bertrand:tmp}"
+declare -r Filename="vim-static.tar.gz"
+declare -r InstallDir="/opt/app/avwobt4"
 
 main () {
   install_avim
@@ -14,6 +14,7 @@ main () {
 }
 
 install_avim () {
+  cd "${InstallDir}/lib"
   scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
   # edit the makefile then make install. don't delete the source
@@ -23,4 +24,4 @@ install_avim () {
 
 return 2>/dev/null || true
 strict_mode on
-run_in_directory "${WorkingDir}" "main" "${@}"
+main "${@}"

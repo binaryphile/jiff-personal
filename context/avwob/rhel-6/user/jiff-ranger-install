@@ -3,11 +3,10 @@
 
 source stdlib
 
-WorkingDir="${WorkingDir:-${HOME}/tmp}"
-RepoUri="${RepoUri:-bertrand:tmp}"
-RangerVer="${RangerVer:-1.6.1}"
-RangerDir="${RangerDir:-ranger-${RangerVer}}"
-Filename="${Filename:-ranger-${RangerVer}.tar.gz}"
+declare -r RepoUri="bertrand:tmp"
+declare -r RangerVer="1.6.1"
+declare -r RangerDir="ranger-${RangerVer}"
+declare -r Filename="ranger-${RangerVer}.tar.gz"
 
 main () {
   exit_if_is_on_path "ranger"
@@ -15,6 +14,8 @@ main () {
 }
 
 install_ranger () {
+  mkdir -p "${HOME}/tmp"
+  cd "${HOME}/tmp"
   scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
   cd "${RangerDir}"
@@ -26,4 +27,4 @@ install_ranger () {
 
 return 0 2>/dev/null || true
 strict_mode on
-run_in_directory "${HOME}/tmp" "main" "${@}"
+main "${@}"
