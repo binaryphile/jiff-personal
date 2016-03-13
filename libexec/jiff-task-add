@@ -6,13 +6,13 @@ source "${_JIFF_ROOT}/../../binaryphile/jiff-core/libexec/jiff-task-add"
 set_taskdir () {
   case "${1}" in
     "role" )
-      echo "${_JIFF_ROOT}/role/current"
+      echo "../role/current"
       ;;
     "default" )
-      echo "${_JIFF_ROOT}/libexec"
+      echo ""
       ;;
     "core" )
-      echo "${_JIFF_ROOT}/../../binaryphile/jiff-core/libexec"
+      echo "../../../binaryphile/jiff-core/libexec"
       ;;
     * )
       echo "${_JIFF_ROOT}/context/current"
@@ -22,3 +22,5 @@ set_taskdir () {
 return 0 2>/dev/null || true
 strict_mode on
 main "${@}"
+cd "${_JIFF_ROOT}"
+git add "libexec/jiff-${2}"
