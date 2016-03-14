@@ -33,3 +33,7 @@ rm "${filename}"
 git fetch upstream
 git rebase upstream/master
 git push --force
+git checkout develop
+git merge master
+git push
+git checkout master
