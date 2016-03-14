@@ -22,15 +22,14 @@ set_taskdir () {
 return 0 2>/dev/null || true
 strict_mode on
 main "${@}"
-taskname="${1}"
-filename="jiff-${taskname}"
+filename="jiff-${1}"
 cd "${_JIFF_ROOT}/../jiff/libexec"
-make_symlink "${filename}" "../../../binaryphile/libexec/${filename}"
+make_symlink "${filename}" "../../../binaryphile/jiff-core/libexec/${filename}"
 git add --force "${filename}"
 git commit -m "automated commit"
 git push
 cd "${_JIFF_ROOT}/libexec"
-git rm --force "${filename}"
+rm "${filename}"
 git fetch upstream
 git rebase upstream/master
 git push --force
