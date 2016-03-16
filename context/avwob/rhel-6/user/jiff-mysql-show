@@ -4,17 +4,14 @@
 source stdlib
 source jifflib
 
-main () {
-  local task
+Verb="mysql-show"
 
-  task="${1:-}"
-  shift
-  usage_and_exit_if_is_empty "${task}"
-  run_and_exit_if_is_jiff_task "${task}-mysql-show" "${@}"
+main () {
+  run_subtask "${Verb}" "${@}"
 }
 
 usage () {
-  echo "Usage: jiff mysql-show TASK"
+  echo "Usage: jiff ${Verb} TASK"
 }
 
 return 0 2>/dev/null || true
