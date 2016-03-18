@@ -7,7 +7,7 @@ declare -r DefaultsFile=/opt/app/avwobt4/etc/mysql/replication.cnf
 declare -r ExpectedMasterHost=135.89.20.86
 declare -r ExpectedMasterPort=3306
 
-declare -r SlaveHost=127.0.0.1
+declare -r SlaveHost=135.89.175.30
 declare -r SlavePort=3306
 
 declare -r MysqlCommand="mysql --defaults-extra-file=${DefaultsFile} "

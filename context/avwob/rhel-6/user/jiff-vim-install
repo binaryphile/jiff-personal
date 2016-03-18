@@ -9,11 +9,11 @@ declare -r Filename="vim-static.tar.gz"
 declare -r InstallDir="/opt/app/avwobt4"
 
 main () {
-  install_avim
+  install_vim
   jiff config vim
 }
 
-install_avim () {
+install_vim () {
   cd "${InstallDir}/lib"
   scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
