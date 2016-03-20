@@ -2,9 +2,9 @@
 
 main () {
   ! [[ -d "${HOME}/.basher" ]] || exit 0
-  pushd "${HOME}" >/dev/null
-  git clone --depth=1 git@github.com:basherpm/basher.git .basher
-  ! [[ "${SHELL}" == "/bin/bash" ]] || grep -q basher .bashrc || cat <<EOM >> .bashrc
+  cd "${HOME}"
+  git clone git@github.com:basherpm/basher .basher
+  ! [[ "${SHELL}" == "/bin/bash" ]] || grep -q basher .bash_profile || cat <<EOM >> .bash_profile
 
 export PATH="\${PATH}:\${HOME}/.basher/bin"
 eval "\$(basher init -)"
@@ -18,13 +18,13 @@ EOM
   if [[ "${SHELL}" == "/bin/bash" ]]; then
     cat <<EOM
 
-You'll want to run "jiff context" to set up platform-specific tasks.
+You'll want to run "jiff context" to set your context.
 
 EOM
     exec bash
   fi
 
-! [[ "${SHELL}" == "/usr/bin/fish" ]] || cat <<EOM
+  ! [[ "${SHELL}" == "/usr/bin/fish" ]] || cat <<EOM
 Done.
 
 You'll want to run the following command:
@@ -33,13 +33,12 @@ set -U fish_user_paths \$fish_user_paths \$HOME/.basher/bin
 
 and restart your shell.
 
-You'll also want to run "jiff context" to set up platform-specific tasks.
+You'll also want to run "jiff context" to set your context.
 
 EOM
-  popd >/dev/null
 }
 
-return 2>/dev/null || true
+return 0 2>/dev/null || true
 set -o errexit
 set -o nounset
 set -o pipefail

@@ -10,7 +10,7 @@ main () {
 }
 
 install_basher () {
-  pushd /etc/profile.d >/dev/null
+  cd /etc/profile.d
   cat <<EOM | sudo tee basher.sh
 _myid="\$(id -u)"
 if [[ "\${_myid}" -ne 0 ]] && [[ "\${_myid}" -ne 10000 ]] && [[ -z "\${BASHER_ROOT}" ]]; then
@@ -23,15 +23,14 @@ EOM
   git commit --message "basher"
   cd /opt
   sudo mkdir basher
-  sudo chown ted:prodadm basher
+  sudo chown "${USER}:prodadm" basher
   chmod g+rwxs basher
   setfacl -m d:g::rwx basher
-  git clone --depth=1 git://github.com/basherpm/basher
+  git clone git://github.com/basherpm/basher
   cd basher/libexec
   sed -i -e 's|${bin_path}:${PATH}|${PATH}:${bin_path}|' basher
   sed -i -e 's|$BASHER_ROOT/cellar/bin:$PATH|$PATH:$BASHER_ROOT/cellar/bin|' -e 's|$BASHER_ROOT/cellar/bin $PATH|$PATH $BASHER_ROOT/cellar/bin|' basher-init
   sed -i -e 's|https://github.com/|git@github.com:|' -e 's|--depth=1||' basher-_clone
-  popd >/dev/null
 }
 
 install_git () {
@@ -49,7 +48,7 @@ EOM
     sudo yum -y install "${prereq}"
   done
   mkdir -p "${HOME}/tmp"
-  pushd "${HOME}/tmp" >/dev/null
+  cd "${HOME}/tmp"
   curl -sL https://downloads.accns.com/git/git-2.7.0.tar.gz | tar xzf -
   cd git-2.7.0
   make configure
@@ -58,7 +57,6 @@ EOM
   sudo make install
   cd ..
   rm -rf git-2.7.0
-  popd >/dev/null
 }
 
 install_jiff () {
@@ -73,17 +71,19 @@ Note: If you are using bash as your shell, run "exec bash" to load jiff
 onto your path.  Otherwise follow the basher instructions for loading
 basher into your shell's environment then source those files or
 re-login.
+
+You'll also want to run "jiff context" to set your context.
 EOM
 }
 
 vc_slash () {
-  pushd / >/dev/null
+  cd / >/dev/null
   sudo mkdir -p .git
-  sudo chown ted:prodadm .git
+  sudo chown "${USER}:prodadm" .git
   chmod g+rwxs .git
   setfacl -m d:g::rwx .git
   sudo touch .gitignore
-  sudo chown ted:prodadm .gitignore
+  sudo chown "${USER}:prodadm" .gitignore
   chmod g+rw .gitignore
   cat <<EOM > .gitignore
 *
@@ -95,13 +95,12 @@ id_*
 EOM
   git init
   git add -f .gitignore
-  git config --global user.name "Ted Lilley"
-  git config --global user.email ted.lilley@accelerated.com
+  git config --global user.name "Administrative User"
+  git config --global user.email aview@accelerated.com
   git commit -m "initial commit"
-  popd >/dev/null
 }
 
-return 2>/dev/null || true
+return 0 2>/dev/null || true
 set -o errexit
 set -o nounset
 set -o pipefail
