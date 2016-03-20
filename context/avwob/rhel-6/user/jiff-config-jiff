@@ -28,7 +28,7 @@ install_files () {
 success_message () {
   cat <<EOM
 
-jiff has been installed and your files are backed up as
+jiff has been configured and your files are backed up as
 "original.bashrc" and "original.bash_profile".
 
 EOM
