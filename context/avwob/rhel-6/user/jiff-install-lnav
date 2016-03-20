@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: jiff lnav-install
+# Usage: jiff install-lnav
 # Summary: Install the lnav logfile navigator
 
 source stdlib

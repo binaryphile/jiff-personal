@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: jiff stgit
+# Usage: jiff install stgit
 # Summary: Install stacked git
 
 source stdlib

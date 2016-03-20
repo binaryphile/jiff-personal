@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: jiff mysql-show
+# Usage: jiff show-mysql
 
 source stdlib
 source jifflib

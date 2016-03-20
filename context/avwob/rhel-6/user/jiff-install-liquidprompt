@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
-# Usage: jiff git-install
+# Usage: jiff install-liquidprompt
+# Summary: Install bash liquidprompt
 
 source stdlib
 
 declare -r WorkingDir="/opt/app/avwobt4"
 declare -r RepoUri="bertrand:tmp"
-declare -r GitVer="2.7.0"
-declare -r Filename="git-${GitVer}-static-avwobt4.tar.gz"
+declare -r Filename="liquidprompt.tar.gz"
 
 main () {
-  exit_if_is_on_path "git"
-  install_git
+  cd "${WorkingDir}"
+  exit_if_is_file "lib/liquidprompt/liquidprompt"
+  install_files
 }
 
-install_git () {
-  cd "${WorkingDir}"
+install_files () {
   scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
   rm "${Filename}"

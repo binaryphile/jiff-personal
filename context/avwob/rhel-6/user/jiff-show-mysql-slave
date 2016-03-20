@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: jiff slave-mysql-show
+# Usage: jiff show-mysql-slave
 
 source stdlib
 

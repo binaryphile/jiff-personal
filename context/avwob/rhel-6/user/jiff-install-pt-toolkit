@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: jiff pt-toolkit-install
+# Usage: jiff install-pt-toolkit
 
 source stdlib
 

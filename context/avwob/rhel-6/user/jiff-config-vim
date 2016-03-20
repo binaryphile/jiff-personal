@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: jiff vim-config
+# Usage: jiff config-vim
 # Summary: Configure vim
 
 source stdlib

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Usage: jiff vim-install
-# Summary: Install personal vim as "myvim"
+# Usage: jiff install vim
+# Summary: Install updated vim
 
 source stdlib
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: jiff ag-install
+# Usage: jiff install-ag
 
 source stdlib
 

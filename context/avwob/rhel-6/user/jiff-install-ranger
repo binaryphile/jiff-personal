@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: jiff ranger-install
+# Usage: jiff install-ranger
 
 source stdlib
 
