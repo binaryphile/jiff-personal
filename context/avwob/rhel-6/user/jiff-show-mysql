@@ -4,7 +4,7 @@
 source stdlib
 source jifflib
 
-Verb="mysql-show"
+Verb="show-mysql"
 
 main () {
   run_subtask "${Verb}" "${@}"
