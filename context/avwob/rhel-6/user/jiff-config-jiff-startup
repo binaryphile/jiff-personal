@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: jiff init-jiff-user
+# Usage: jiff config-jiff-startup
 
 source stdlib
 source uilib
