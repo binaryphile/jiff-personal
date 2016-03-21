@@ -33,7 +33,7 @@ On the AVWOB machines, jiff is already installed, it just needs to be
 enabled for your account.  To do this, run:
 
 ```
-/opt/app/avwobt4/cellar/bin/jiff init user
+/opt/app/avwobt4/cellar/bin/jiff config jiff startup
 ```
 
 It will backup and replace your bash init files.  As an added bonus,
