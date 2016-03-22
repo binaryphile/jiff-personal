@@ -4,7 +4,7 @@ GitVersion=2.7.4
 
 main () {
   ! [[ -d "/opt/basher" ]] || exit 0
-  which git 2>/dev/null || install_git
+  which git >/dev/null || install_git
   vc_slash
   install_basher
   install_jiff
