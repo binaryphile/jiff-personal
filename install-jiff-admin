@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+GitVersion=2.7.4
+
 main () {
   ! [[ -d "/opt/basher" ]] || exit 0
   which git 2>/dev/null || install_git
@@ -49,14 +51,14 @@ EOM
   done
   mkdir -p "${HOME}/tmp"
   cd "${HOME}/tmp"
-  curl -sL https://downloads.accns.com/git/git-2.7.0.tar.gz | tar xzf -
-  cd git-2.7.0
+  curl -sL "https://downloads.accns.com/git/git-${GitVersion}.tar.gz" | tar xzf -
+  cd "git-${GitVersion}"
   make configure
   ./configure --prefix=/usr
   make all
   sudo make install
   cd ..
-  rm -rf git-2.7.0
+  rm -rf "git-${GitVersion}"
 }
 
 install_jiff () {
