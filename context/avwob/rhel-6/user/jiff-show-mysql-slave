@@ -8,7 +8,7 @@ source uilib
 set_default "DefaultsFile" "/opt/app/avwobt4/etc/mysql/replication.cnf"
 set_default "MysqlPort" "3306"
 
-declare MysqlCommand="mysql --defaults-extra-file=${DefaultsFile}"
+declare -r MysqlCommand="mysql --defaults-extra-file=${DefaultsFile}"
 
 main () {
   is_match "${1:-}" "status" || exit 1
