@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Usage: jiff avwob service
+
+source stdlib
+
+set_default "ServiceUser" "avwob"
+set_default "BashEnv" "~${ServiceUser}/.bashrc"
+
+main () {
+  sudo -su "${ServiceUser}" BASH_ENV="${BashEnv}" aviewctl "${@}"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Usage: jiff show <service>
+
+source stdlib
+
+main () {
+  if pgrep -f jboss | xargs ps -fp 2>/dev/null; then
+    echo
+    echo "avwob jboss instance is running"
+  else
+    echo "avwob jboss instance is not running"
+  fi
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"

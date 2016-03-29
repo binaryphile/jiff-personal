@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Usage: jiff avwob
+
+source stdlib
+source jifflib
+
+Verb="avwob"
+
+main () {
+  run_subtask "${Verb}" "${@}"
+}
+
+usage () {
+  echo "Usage: jiff ${Verb} TASK"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"
