@@ -11,9 +11,23 @@ set_default "MysqlPort" "3306"
 declare -r MysqlCommand="mysql --defaults-extra-file=${DefaultsFile}"
 
 main () {
-  is_match "${1:-}" "status" || exit 1
-  is_not_empty "${2:-}" || exit 1
-  analyze_and_report "${2}"
+  local command
+
+  command="${1:-}"
+  shift
+  is_not_empty "${command}" || exit 1
+  case "${command}" in
+    "slave" )
+      show_slave "${@}"
+  esac
+}
+
+show_slave () {
+  local server
+
+  server="${1:-}"
+  is_not_empty "${server}" || exit 1
+  analyze_and_report "${server}"
 }
 
 analyze_and_report () {

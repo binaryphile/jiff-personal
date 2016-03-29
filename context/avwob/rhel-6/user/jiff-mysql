@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Usage: jiff show-mysql
+# Usage: jiff mysql
 
 source stdlib
 source jifflib
 
-Verb="show-mysql"
+Verb="mysql"
 
 main () {
   run_subtask "${Verb}" "${@}"
