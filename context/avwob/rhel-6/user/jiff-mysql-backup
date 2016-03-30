@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Usage: jiff show mysql backup [master|slave] <host>
+
+source stdlib
+source arraylib
+source uilib
+
+set_default "DefaultsFile" "/opt/app/avwobt4/etc/mysql/backup.cnf"
+set_default "MysqlPort" "3306"
+set_default "DatabaseName" "avwob_production"
+
+declare -r TimeFormat="+%Y-%m-%d-%H%M"
+declare -r MysqlBackupCommand="mysqldump --defaults-extra-file=${DefaultsFile}"
+declare -r MysqlMasterBackupCommand="${MysqlBackupCommand} --master-data --single-transaction ${DatabaseName}"
+declare -r MysqlFullBackupCommand="${MysqlBackupCommand} --all-databases --single-transaction"
+declare -r MysqlUserBackupCommand="${MysqlBackupCommand} --skip-extended-insert --single-transaction mysql user"
+
+main () {
+  local command
+
+  command="${1:-}"
+  shift
+  is_not_empty "${command}" || exit 1
+  case "${command}" in
+    "master" )
+      backup_master "${@}"
+  esac
+}
+
+backup_master () {
+  if abc; then
+
+  fi
+}
+
+success_message () {
+  echo "Replication OK"
+  printf "file: %s at %'d\n" "${1}" "${2}"
+}
+
+timestamp () {
+  date "${TimeFormat}"
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "${@}"
