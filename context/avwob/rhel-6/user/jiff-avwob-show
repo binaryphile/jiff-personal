@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Usage: jiff show <service>
+# Usage: jiff avwob show
 
 source stdlib
 
 main () {
+  is_match "${1}" "process" || exit 1
   if pgrep -f jboss | xargs ps -fp 2>/dev/null; then
     echo
     echo "avwob jboss instance is running"
