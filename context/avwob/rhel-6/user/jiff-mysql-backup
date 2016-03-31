@@ -8,8 +8,10 @@ source uilib
 set_default "DefaultsFile" "/opt/app/avwobt4/etc/mysql/backup.cnf"
 set_default "MysqlPort" "3306"
 set_default "DatabaseName" "avwob_production"
+set_default "TimeFormat" "+%Y-%m-%d-%H%M"
+set_default "OutputDirectory" "/opt/app/avdata/backup"
 
-declare -r TimeFormat="+%Y-%m-%d-%H%M"
+
 declare -r MysqlBackupCommand="mysqldump --defaults-extra-file=${DefaultsFile}"
 declare -r MysqlMasterBackupCommand="${MysqlBackupCommand} --master-data --single-transaction ${DatabaseName}"
 declare -r MysqlFullBackupCommand="${MysqlBackupCommand} --all-databases --single-transaction"
@@ -22,15 +24,14 @@ main () {
   shift
   is_not_empty "${command}" || exit 1
   case "${command}" in
-    "master" )
-      backup_master "${@}"
+    "full" )
+      is_not_empty "${1}" || exit 1
+      backup_full "${1}"
   esac
 }
 
-backup_master () {
-  if abc; then
-
-  fi
+backup_full () {
+  ${MysqlFullBackupCommand} | gzip -v > "${OutputDirectory}/${1}-full-$(date "${TimeFormat}").sql.gz"
 }
 
 success_message () {
