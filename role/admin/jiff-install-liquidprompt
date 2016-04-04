@@ -6,7 +6,7 @@ source stdlib
 
 main () {
   exit_if_is_file "/etc/profile.d/liquidprompt.sh"
-  jiff slash-git
+  jiff vc-slash
   install_files
   # TODO: skip for rhel-6
   is_not_file "/etc/bash.bashrc" || update_bashrc
