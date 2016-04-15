@@ -9,11 +9,38 @@ declare -r RepoBranch="essential"
 declare -r InstallDir=".vim"
 
 main () {
+  case "${1:-}" in
+    "avwob" )
+      config_avwob
+      ;;
+    * )
+      config
+      ;;
+  esac
+}
+
+config () {
+  cd "${HOME}"
   exit_if_is_directory "${InstallDir}"
   jiff install git
-  cd "${HOME}"
-  git clone --branch="${RepoBranch}" "${RepoUri}" "${InstallDir}"
+  git clone "${RepoUri}" "${InstallDir}"
   make_symlink ".vimrc" "${InstallDir}/vimrc"
+  cd "${InstallDir}"
+  git checkout "${RepoBranch}"
+}
+
+config_avwob () {
+  exit_if_is_directory "~avwob/.vim"
+  exit_if_is_directory "~avwob/dot_vim"
+  cd "${HOME}"
+  rsync -a .vim/ ~avwob/dot_vim
+  cd ~avwob/dot_vim
+  stg init
+  stg pick origin/essential-qwerty
+  cd ~avwob
+  chmod -R go+rX dot_vim
+  runas avwob rsync -a dot_vim/ .vim
+  rm -rf dot_vim
 }
 
 return 0 2>/dev/null || true
