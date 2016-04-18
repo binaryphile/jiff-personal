@@ -40,6 +40,7 @@ config_avwob () {
   cd ~avwob
   chmod -R go+rX dot_vim
   runas avwob rsync -a dot_vim/ .vim
+  runas avwob ln -sf ~avwob/.vim/vimrc .vimrc
   rm -rf dot_vim
 }
 
