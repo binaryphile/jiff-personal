@@ -7,10 +7,11 @@ source uilib
 declare -r InstallDir="/opt/app/avwobt4"
 
 main () {
-  cd "${HOME}"
+  push_dir "${HOME}"
   exit_if_is_file "original.bashrc"
   install_files
   success_message
+  pop_dir
   exec /bin/bash
 }
 
@@ -21,8 +22,9 @@ install_files () {
   cp "${InstallDir}/share/bash/bashrc" .bashrc
   cp "${InstallDir}/share/bash/bash_profile" .bash_profile
   mkdir -p "${HOME}/.config"
-  cd "${HOME}/.config"
+  push_dir "${HOME}/.config"
   ln -sf "${InstallDir}/share/liquidprompt/liquidpromptrc"
+  pop_dir
 }
 
 success_message () {
