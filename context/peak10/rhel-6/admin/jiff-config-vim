@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Usage: jiff config-vim
+# Summary: Configure vim
+
+source stdlib
+source distrolib
+
+main () {
+  push_dir /etc
+  is_file "vimrc" || exit 1
+  jiff vc-slash
+  git add --force vimrc
+  git commit --message "add vimrc"
+  cat <<EOM | sudo tee vimrc >/dev/null
+
+for file in split(glob('/usr/share/vim/vimfiles//*.vim'), '\n')
+  exe 'source' file
+endfor
+EOM
+  git add vimrc
+  git commit --message "update vimrc"
+  cd /usr/share/vim/vimfiles
+  curl -sL "https://raw.githubusercontent.com/binaryphile/five-minutes-of-vim/master/vimrc" | sudo tee defaults.vim >/dev/null
+  git add --force defaults.vim
+  git commit --message "add local vimrc"
+  pop_dir
+}
+
+return 0 2>/dev/null || true
+strict_mode on
+main "$@"
