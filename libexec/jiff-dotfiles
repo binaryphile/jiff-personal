@@ -40,5 +40,5 @@ main () {
 }
 
 return 2>/dev/null || true
-strict_mode_on
-main "${@}"
+strict_mode on
+main "$@"
