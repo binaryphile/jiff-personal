@@ -15,7 +15,7 @@ install_basher () {
   cd /etc/profile.d
   cat <<EOM | sudo tee basher.sh
 _myid="\$(id -u)"
-if [[ "\${_myid}" -ne 0 ]] && [[ "\${_myid}" -ne 10000 ]] && [[ -z "\${BASHER_ROOT}" ]]; then
+if [[ "\${_myid}" -gt 199 ]] && [[ "\${_myid}" -ne 10000 ]] && [[ -z "\${BASHER_ROOT}" ]]; then
   export BASHER_ROOT=/opt/basher
   export PATH="\${PATH}:/opt/basher/bin"
   eval "\$(basher init -)"
