@@ -11,7 +11,7 @@ main () {
   jiff vc-slash
   git add --force vimrc
   git commit --message "add vimrc"
-  cat <<EOM | sudo tee vimrc >/dev/null
+  cat <<EOM | sudo tee -a vimrc >/dev/null
 
 for file in split(glob('/usr/share/vim/vimfiles//*.vim'), '\n')
   exe 'source' file
