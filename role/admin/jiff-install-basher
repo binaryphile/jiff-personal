@@ -5,7 +5,7 @@
 source stdlib
 
 read -d "" BashText <<EOM
-if [[ "\$(id -u)" -ne 0 ]] && [[ -z "\${BASHER_ROOT}" ]]; then
+if [[ "\$(id -u)" -gt 199 ]] && [[ "\$(id -u)" -ne 10000 ]] && [[ -z "\${BASHER_ROOT}" ]]; then
   export BASHER_ROOT=/opt/basher
   export PATH="\${PATH}:/opt/basher/bin"
   eval "\$(basher init -)"
@@ -35,4 +35,4 @@ install_basher () {
 
 return 0 2>/dev/null || true
 strict_mode on
-main "${@}"
+main "$@"

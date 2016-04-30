@@ -5,7 +5,7 @@ source "${_JIFF_ROOT}/../../binaryphile/jiff-core/libexec/jiff-add-task"
 
 push_core_task () {
   # TODO: check and see if we're on master on jiff-personal first. commit and push jiff-core.  mv jiff-personal link to jiff instead of creating and rm'ing?
-  filename="jiff-${1}"
+  filename="jiff-$1"
   cd "${_JIFF_ROOT}/../jiff/libexec"
   make_symlink "${filename}" "../../../binaryphile/jiff-core/libexec/${filename}"
   git add --force "${filename}"
@@ -23,7 +23,7 @@ push_core_task () {
 }
 
 set_taskdir () {
-  case "${1}" in
+  case "$1" in
     "role" )
       echo "../role/current"
       ;;
@@ -40,5 +40,5 @@ set_taskdir () {
 
 return 0 2>/dev/null || true
 strict_mode on
-main "${@}"
-is_not_match "${2:-}" "core" || push_core_task "${1}"
+main "$@"
+is_not_match "${2:-}" "core" || push_core_task "$1"

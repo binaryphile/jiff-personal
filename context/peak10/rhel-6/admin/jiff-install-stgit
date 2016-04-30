@@ -24,4 +24,4 @@ install_stg () {
 
 return 0 2>/dev/null || true
 strict_mode on
-main "${@}"
+main "$@"
