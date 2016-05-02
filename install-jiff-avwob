@@ -8,6 +8,7 @@ declare -r Filename="${GitDir}-static-avwob.tar.gz"
 
 main () {
   [[ -d "${InstallDir}" ]] || exit 1
+  export PATH="${PATH}:${InstallDir}/bin"
   which git 2>/dev/null || install_git
   install_basher
   install_jiff
