@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+declare -r InstallDir=/opt/app/avwobt4
+declare -r RepoUri=bertrand:tmp
+declare -r GitVersion=2.7.4
+declare -r GitDir="git-${GitVersion}"
+declare -r Filename="${GitDir}.tar.gz"
+
+main () {
+  [[ -d "InstallDir" ]] || exit 1
+  which git 2>/dev/null || install_git
+  install_basher
+  install_jiff
+  success_message
+}
+
+install_git () {
+}
+
+install_jiff () {
+  export BASHER_ROOT="${InstallDir}"
+  "${InstallDir}/bin/basher" install binaryphile/jiff-personal
+}
+
+pop_dir () {
+  popd >/dev/null
+}
+
+push_dir () {
+  pushd "$1" >/dev/null
+}
+
+success_message () {
+  cat <<EOM
+
+Note: If you are using bash as your shell, run "exec bash" to load jiff
+onto your path.  Otherwise follow the basher instructions for loading
+basher into your shell's environment then source those files or
+re-login.
+
+You'll also want to run "jiff set context" to set your context.
+EOM
+}
+
+return 0 2>/dev/null || true
+set -o errexit
+set -o nounset
+set -o pipefail
+main "$@"
