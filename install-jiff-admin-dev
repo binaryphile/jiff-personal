@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-declare -r InstallDir=/opt/app/avwobt4/bin
 declare -r RepoUri=bertrand:tmp
 declare -r GitVersion=2.7.4
 declare -r GitDir="git-${GitVersion}"
