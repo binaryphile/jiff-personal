@@ -7,7 +7,7 @@ declare -r Filename="${GitDir}.tar.gz"
 
 main () {
   ! [[ -d "/opt/basher" ]] || exit 0
-  which git >/dev/null || install_git
+  which git 2>/dev/null || install_git
   vc_slash
   install_basher
   install_jiff
@@ -89,7 +89,7 @@ onto your path.  Otherwise follow the basher instructions for loading
 basher into your shell's environment then source those files or
 re-login.
 
-You'll also want to run "jiff context" to set your context.
+You'll also want to run "jiff set context" to set your context.
 EOM
 }
 

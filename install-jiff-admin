@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
+declare -r InstallDir "/opt/basher"
 GitVersion=2.7.4
 
 main () {
-  ! [[ -d "/opt/basher" ]] || exit 0
-  which git >/dev/null || install_git
+  ! [[ -d "${InstallDir}" ]] || exit 0
+  which git 2>/dev/null || install_git
   vc_slash
   install_basher
   install_jiff
@@ -16,8 +17,8 @@ install_basher () {
   cat <<EOM | sudo tee basher.sh
 _myid="\$(id -u)"
 if [[ "\${_myid}" -gt 199 ]] && [[ "\${_myid}" -ne 10000 ]] && [[ -z "\${BASHER_ROOT}" ]]; then
-  export BASHER_ROOT=/opt/basher
-  export PATH="\${PATH}:/opt/basher/bin"
+  export BASHER_ROOT="${InstallDir}"
+  export PATH="\${PATH}:${InstallDir}/bin"
   eval "\$(basher init -)"
 fi
 EOM
@@ -62,8 +63,8 @@ EOM
 }
 
 install_jiff () {
-  export BASHER_ROOT=/opt/basher
-  /opt/basher/bin/basher install binaryphile/jiff-personal
+  export BASHER_ROOT="${InstallDir}"
+  "${InstallDir}/bin/basher" install binaryphile/jiff-personal
 }
 
 success_message () {
@@ -74,7 +75,7 @@ onto your path.  Otherwise follow the basher instructions for loading
 basher into your shell's environment then source those files or
 re-login.
 
-You'll also want to run "jiff context" to set your context.
+You'll also want to run "jiff set context" to set your context.
 EOM
 }
 

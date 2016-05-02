@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 
+declare -r InstallDir "${HOME}/.basher"
+
 main () {
-  ! [[ -d "${HOME}/.basher" ]] || exit 0
-  cd "${HOME}"
+  ! [[ -d "${InstallDir}" ]] || exit 0
+  install_basher
+  install_jiff
+  success_message
+}
+
+install_basher () {
+  push_dir "${HOME}"
   git clone git@github.com:basherpm/basher .basher
   ! [[ "${SHELL}" == "/bin/bash" ]] || grep -q basher .bash_profile || cat <<EOM >> .bash_profile
 
@@ -13,12 +21,26 @@ EOM
   sed -i -e 's|${bin_path}:${PATH}|${PATH}:${bin_path}|' basher
   sed -i -e 's|$BASHER_ROOT/cellar/bin:$PATH|$PATH:$BASHER_ROOT/cellar/bin|' -e 's|PATH $BASHER_ROOT/cellar/bin $PATH|PATH $PATH $BASHER_ROOT/cellar/bin|' basher-init
   sed -i -e 's| --depth=1||' -e 's|https://github.com/|git@github.com:|' basher-_clone
-  "${HOME}/.basher/bin/basher" install binaryphile/jiff-personal
+  pop_dir
+}
 
+install_jiff () {
+  "${InstallDir}/bin/basher" install binaryphile/jiff-personal
+}
+
+pop_dir () {
+  popd 2>/dev/null
+}
+
+push_dir () {
+  pushd "$1" 2>/dev/null
+}
+
+success_message () {
   if [[ "${SHELL}" == "/bin/bash" ]]; then
     cat <<EOM
 
-You'll want to run "jiff context" to set your context.
+You'll want to run "jiff set context" to set your context.
 
 EOM
     exec bash
@@ -33,7 +55,7 @@ set -U fish_user_paths \$fish_user_paths \$HOME/.basher/bin
 
 and restart your shell.
 
-You'll also want to run "jiff context" to set your context.
+You'll also want to run "jiff set context" to set your context.
 
 EOM
 }
