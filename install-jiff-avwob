@@ -7,7 +7,7 @@ declare -r GitDir="git-${GitVersion}"
 declare -r Filename="${GitDir}-static-avwobt4.tar.gz"
 
 main () {
-  [[ -d "InstallDir" ]] || exit 1
+  [[ -d "${InstallDir}" ]] || exit 1
   which git 2>/dev/null || install_git
   install_basher
   install_jiff
