@@ -7,7 +7,7 @@ source jifflib
 Verb="mysql"
 
 main () {
-  run_subtask "${Verb}" "${@}"
+  run_subtask "${Verb}" "$@"
 }
 
 usage () {
@@ -16,4 +16,4 @@ usage () {
 
 return 0 2>/dev/null || true
 strict_mode on
-main "${@}"
+main "$@"

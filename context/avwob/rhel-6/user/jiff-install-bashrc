@@ -4,12 +4,12 @@
 
 source stdlib
 
-declare -r WorkingDir="/opt/app/avwobt4"
+declare -r InstallDir="/opt/app/avwobt4"
 declare -r RepoUri="bertrand:tmp"
 declare -r Filename="bashrc.tar.gz"
 
 main () {
-  cd "${WorkingDir}"
+  cd "${InstallDir}"
   exit_if_is_file "share/bash/bashrc"
   install_files
 }
@@ -22,4 +22,4 @@ install_files () {
 
 return 0 2>/dev/null || true
 strict_mode on
-main "${@}"
+main "$@"

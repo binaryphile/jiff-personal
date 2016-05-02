@@ -6,11 +6,11 @@ source stdlib
 main () {
   local servicename
 
-  servicename="${2}"
+  servicename="$2"
   is_not_empty "${servicename}" || exit 1
-  sudo service "${servicename}" "${1}"
+  sudo service "${servicename}" "$1"
 }
 
 return 0 2>/dev/null || true
 strict_mode on
-main "${@}"
+main "$@"

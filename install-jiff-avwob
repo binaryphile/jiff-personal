@@ -4,7 +4,7 @@ declare -r InstallDir=/opt/app/avwobt4
 declare -r RepoUri=bertrand:tmp
 declare -r GitVersion=2.7.4
 declare -r GitDir="git-${GitVersion}"
-declare -r Filename="${GitDir}.tar.gz"
+declare -r Filename="${GitDir}-static-avwobt4.tar.gz"
 
 main () {
   [[ -d "InstallDir" ]] || exit 1
@@ -14,7 +14,21 @@ main () {
   success_message
 }
 
+install_basher () {
+  push_dir "/opt/app"
+  git clone git@github.com/basherpm/basher avwobt4
+  cd avwobt4/libexec
+  sed -i -e 's|${bin_path}:${PATH}|${PATH}:${bin_path}|' basher
+  sed -i -e 's|$BASHER_ROOT/cellar/bin:$PATH|$PATH:$BASHER_ROOT/cellar/bin|' -e 's|$BASHER_ROOT/cellar/bin $PATH|$PATH $BASHER_ROOT/cellar/bin|' basher-init
+  sed -i -e 's|https://github.com/|git@github.com:|' -e 's|--depth=1||' basher-_clone
+  pop_dir
+}
+
 install_git () {
+  cd "${InstallDir}"
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
+  rm "${Filename}"
 }
 
 install_jiff () {

@@ -25,18 +25,18 @@ main () {
   is_not_empty "${command}" || exit 1
   case "${command}" in
     "full" )
-      is_not_empty "${1}" || exit 1
-      backup_full "${1}"
+      is_not_empty "$1" || exit 1
+      backup_full "$1"
   esac
 }
 
 backup_full () {
-  ${MysqlFullBackupCommand} | gzip -v > "${OutputDirectory}/${1}-full-$(date "${TimeFormat}").sql.gz"
+  ${MysqlFullBackupCommand} | gzip -v > "${OutputDirectory}/$1-full-$(date "${TimeFormat}").sql.gz"
 }
 
 success_message () {
   echo "Replication OK"
-  printf "file: %s at %'d\n" "${1}" "${2}"
+  printf "file: %s at %'d\n" "$1" "$2"
 }
 
 timestamp () {
@@ -45,4 +45,4 @@ timestamp () {
 
 return 0 2>/dev/null || true
 strict_mode on
-main "${@}"
+main "$@"

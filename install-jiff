@@ -25,6 +25,7 @@ EOM
 }
 
 install_jiff () {
+  export BASHER_ROOT="${InstallDir}"
   "${InstallDir}/bin/basher" install binaryphile/jiff-personal
 }
 

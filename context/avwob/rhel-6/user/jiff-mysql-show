@@ -18,7 +18,7 @@ main () {
   is_not_empty "${command}" || exit 1
   case "${command}" in
     "slave" )
-      show_slave "${@}"
+      show_slave "$@"
   esac
 }
 
@@ -42,7 +42,7 @@ analyze_and_report () {
   local slave_sql_running
   local lag
 
-  response="$(query_slave "${1}")"
+  response="$(query_slave "$1")"
   master_host="$(parse_value "${response}" "Master_Host")"
   master_port="$(parse_value "${response}" "Master_Port")"
   master_logfile="$(parse_value "${response}" "Master_Log_File")"
@@ -64,54 +64,54 @@ analyze_and_report () {
 }
 
 analyze_binlog () {
-  if is_not_match "${1}" "${2}"; then
-    echo "master binlog (${1}) and master_logfile (${2}) differ"
+  if is_not_match "$1" "$2"; then
+    echo "master binlog ($1) and master_logfile ($2) differ"
     return 1
   fi
 }
 
 analyze_io () {
-  if is_match "${1}" "No";  then
+  if is_match "$1" "No";  then
     echo "Replication is stopped"
     return 1
   fi
 }
 
 analyze_lag () {
-  if [[ "${1}" -gt 1000 ]]; then
-    echo "The slave is lagging behind by ${1}"
+  if [[ "$1" -gt 1000 ]]; then
+    echo "The slave is lagging behind by $1"
     return 1
   fi
 }
 
 analyze_replication () {
-  if is_match "${1}" "No"; then
+  if is_match "$1" "No"; then
     echo "Replication (SQL) is stopped"
     return 1
   fi
 }
 
 determine_lag () {
-  echo "${1}-${read_master_log_pos}" | bc
+  echo "$1-${read_master_log_pos}" | bc
 }
 
 parse_value () {
-  echo "${1}" | grep -w "${2}" | awk '{print $2}'
+  echo "$1" | grep -w "$2" | awk '{print $2}'
 }
 
 query_master () {
-  ${MysqlCommand} -h "${1}" -P "${2}" -e 'SHOW MASTER STATUS\G'
+  ${MysqlCommand} -h "$1" -P "$2" -e 'SHOW MASTER STATUS\G'
 }
 
 query_slave () {
-  $MysqlCommand -h "${1}" -P "${MysqlPort}" -e 'SHOW SLAVE STATUS\G'
+  $MysqlCommand -h "$1" -P "${MysqlPort}" -e 'SHOW SLAVE STATUS\G'
 }
 
 success_message () {
   echo "Replication OK"
-  printf "file: %s at %'d\n" "${1}" "${2}"
+  printf "file: %s at %'d\n" "$1" "$2"
 }
 
 return 0 2>/dev/null || true
 strict_mode on
-main "${@}"
+main "$@"

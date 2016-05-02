@@ -3,9 +3,9 @@
 
 source stdlib
 
-declare -r WorkingDir="/opt/app/avwobt4"
+declare -r InstallDir="/opt/app/avwobt4"
 declare -r RepoUri="bertrand:tmp"
-declare -r GitVer="2.7.0"
+declare -r GitVer="2.7.4"
 declare -r Filename="git-${GitVer}-static-avwobt4.tar.gz"
 
 main () {
@@ -14,7 +14,7 @@ main () {
 }
 
 install_git () {
-  cd "${WorkingDir}"
+  cd "${InstallDir}"
   scp "${RepoUri}/${Filename}" .
   tar xzf "${Filename}"
   rm "${Filename}"
@@ -22,4 +22,4 @@ install_git () {
 
 return 0 2>/dev/null || true
 strict_mode on
-main "${@}"
+main "$@"

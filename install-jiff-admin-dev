@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
+declare -r InstallDir=/opt/basher
 declare -r RepoUri=bertrand:tmp
 declare -r GitVersion=2.7.4
 declare -r GitDir="git-${GitVersion}"
 declare -r Filename="${GitDir}.tar.gz"
 
 main () {
-  ! [[ -d "/opt/basher" ]] || exit 0
+  ! [[ -d "${InstallDir}" ]] || exit 0
   which git 2>/dev/null || install_git
   vc_slash
   install_basher
@@ -19,8 +20,8 @@ install_basher () {
   cat <<EOM | sudo tee basher.sh
 _myid="\$(id -u)"
 if [[ "\${_myid}" -gt 199 ]] && [[ "\${_myid}" -ne 10000 ]] && [[ -z "\${BASHER_ROOT}" ]]; then
-  export BASHER_ROOT=/opt/basher
-  export PATH="\${PATH}:/opt/basher/bin"
+  export BASHER_ROOT=${InstallDir}
+  export PATH="\${PATH}:${InstallDir}/bin"
   eval "\$(basher init -)"
 fi
 EOM
@@ -69,8 +70,8 @@ EOM
 }
 
 install_jiff () {
-  export BASHER_ROOT=/opt/basher
-  /opt/basher/bin/basher install binaryphile/jiff-personal
+  export BASHER_ROOT="${InstallDir}"
+  "${InstallDir}/bin/basher" install binaryphile/jiff-personal
 }
 
 pop_dir () {
