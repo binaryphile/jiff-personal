@@ -16,9 +16,12 @@ main () {
 }
 
 install_basher () {
-  push_dir "/opt/app"
-  git clone git@github.com/basherpm/basher avwobt4
-  cd avwobt4/libexec
+  push_dir "${InstallDir}"
+  git clone git@github.com:basherpm/basher
+  rm -rf basher/.git
+  cp -r basher/* .
+  rm -rf basher
+  cd libexec
   sed -i -e 's|${bin_path}:${PATH}|${PATH}:${bin_path}|' basher
   sed -i -e 's|$BASHER_ROOT/cellar/bin:$PATH|$PATH:$BASHER_ROOT/cellar/bin|' -e 's|$BASHER_ROOT/cellar/bin $PATH|$PATH $BASHER_ROOT/cellar/bin|' basher-init
   sed -i -e 's|https://github.com/|git@github.com:|' -e 's|--depth=1||' basher-_clone
@@ -48,12 +51,17 @@ push_dir () {
 success_message () {
   cat <<EOM
 
-Note: If you are using bash as your shell, run "exec bash" to load jiff
-onto your path.  Otherwise follow the basher instructions for loading
-basher into your shell's environment then source those files or
-re-login.
+Note: jiff is not installed for your shell yet.
 
-You'll also want to run "jiff set context" to set your context.
+You'll want to run:
+
+${InstallDir}/bin/jiff role user
+${InstallDir}/bin/jiff set context avwob
+${InstallDir}/bin/jiff install bashrc
+${InstallDir}/bin/jiff config jiff startup
+
+Then check your login and switch to that window.
+
 EOM
 }
 
