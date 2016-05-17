@@ -6,7 +6,7 @@ source stdlib
 declare -r InstallDir="/opt/app/avwobt4"
 declare -r RepoUri="bertrand:tmp"
 declare -r GitVer="2.7.4"
-declare -r Filename="git-${GitVer}-static-avwobt4.tar.gz"
+declare -r Filename="git-${GitVer}-static-avwob.tar.gz"
 
 main () {
   exit_if_is_on_path "git"

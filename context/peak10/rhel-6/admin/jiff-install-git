@@ -4,6 +4,11 @@
 
 source stdlib
 
+declare -r RepoUri=https://downloads.accns.com/git
+declare -r GitVersion=2.7.4
+declare -r GitDir="git-${GitVersion}"
+declare -r Filename="${GitDir}.tar.gz"
+
 read -d "" -a Prereqs <<EOM || true
 gcc
 curl-devel
@@ -24,17 +29,18 @@ main () {
 
 install_git () {
   mkdir -p "${HOME}/tmp"
-  cd "${HOME}/tmp"
-  wget https://downloads.accns.com/git/git-2.7.0.tar.gz
-  tar xzf git-2.7.0.tar.gz
-  cd git-2.7.0
+  push_dir "${HOME}/tmp"
+  scp "${RepoUri}/${Filename}" .
+  tar xzf "${Filename}"
+  cd "${GitDir}"
   make configure
   ./configure --prefix=/usr
   make all
   sudo make install
   cd ..
-  rm -rf git-2.7.0
-  rm git-2.7.0.tar.gz
+  rm -rf "${GitDir}"
+  rm "${Filename}"
+  pop_dir
 }
 
 install_prereqs () {
@@ -47,4 +53,4 @@ install_prereqs () {
 
 return 0 2>/dev/null || true
 strict_mode on
-main "${@}"
+main "$@"
