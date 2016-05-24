@@ -15,8 +15,9 @@ install_ag () {
   mkdir -p "${HOME}/tmp"
   cd "${HOME}/tmp"
   scp "${RepoUri}/${Filename}" .
-  tar xzf "${Filename}"
-  rm "${Filename}"
+  # TODO: actually install ag
+  # tar xzf "${Filename}"
+  # rm "${Filename}"
 }
 
 return 0 2>/dev/null || true
