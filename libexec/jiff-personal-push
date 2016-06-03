@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
 # Usage: jiff personal-push
 
-source stdlib
+source std.sh
 
-strict_mode on
+main() {
+  jiff install git
+  std::push_dir "${HOME}/binaryphile/jiff-personal"
+  git fetch upstream
+  git rebase upstream/master
+  git push -f
+  std::pop_dir
+}
 
-jiff install git
-push_dir "${HOME}/binaryphile/jiff-personal"
-git fetch upstream
-git rebase upstream/master
-git push -f
-pop_dir
+return 0 2>/dev/null || true
+std::strict_mode on
+main "$@"

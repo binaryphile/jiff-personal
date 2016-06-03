@@ -4,22 +4,22 @@
 
 source "${_JIFF_ROOT}/../../binaryphile/jiff-core/libexec/jiff-task"
 
-set_taskdir () {
+set_taskdir() {
   case "$1" in
     "role" )
-      echo "${_JIFF_ROOT}/role/current"
+      printf "%s/role/current" "${_JIFF_ROOT}"
       ;;
     "default" )
-      echo "${_JIFF_ROOT}/libexec"
+      printf "%s/libexec" "${_JIFF_ROOT}"
       ;;
     "core" )
-      echo "${_JIFF_ROOT}/../../binaryphile/jiff-core/libexec"
+      printf "%s/../../binaryphile/jiff-core/libexec" "${_JIFF_ROOT}"
       ;;
     * )
-      echo "${_JIFF_ROOT}/context/current"
+      printf "%s/context/current" "${_JIFF_ROOT}"
   esac
 }
 
 return 2>/dev/null || true
-strict_mode on
+std::strict_mode on
 main "$@"

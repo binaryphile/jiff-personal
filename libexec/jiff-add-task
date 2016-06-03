@@ -3,11 +3,11 @@
 
 source "${_JIFF_ROOT}/../../binaryphile/jiff-core/libexec/jiff-add-task"
 
-push_core_task () {
+push_core_task() {
   # TODO: check and see if we're on master on jiff-personal first. commit and push jiff-core.  mv jiff-personal link to jiff instead of creating and rm'ing?
   filename="jiff-$1"
   cd "${_JIFF_ROOT}/../jiff/libexec"
-  make_symlink "${filename}" "../../../binaryphile/jiff-core/libexec/${filename}"
+  std::make_symlink "${filename}" "../../../binaryphile/jiff-core/libexec/${filename}"
   git add --force "${filename}"
   git commit -m "automated commit"
   git push
@@ -25,20 +25,20 @@ push_core_task () {
 set_taskdir () {
   case "$1" in
     "role" )
-      echo "../role/current"
+      printf "../role/current"
       ;;
     "default" )
-      echo ""
+      printf ""
       ;;
     "core" )
-      echo "../../../binaryphile/jiff-core/libexec"
+      printf "../../../binaryphile/jiff-core/libexec"
       ;;
     * )
-      echo "../context/current"
+      printf "../context/current"
   esac
 }
 
 return 0 2>/dev/null || true
-strict_mode on
+std::strict_mode on
 main "$@"
-is_not_match "${2:-}" "core" || push_core_task "$1"
+std::is_not_match "${2:-}" "core" || push_core_task "$1"
