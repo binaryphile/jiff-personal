@@ -1,53 +1,56 @@
 #!/usr/bin/env bash
 
-declare -r InstallDir "${HOME}/.basher"
+declare -r InstallDir="$HOME"/.basher
 
-main () {
-  ! [[ -d "${InstallDir}" ]] || exit 0
+main() {
+  ! [[ -d $InstallDir ]] || exit 0
   install_basher
   install_jiff
   success_message
 }
 
-install_basher () {
-  push_dir "${HOME}"
-  git clone git@github.com:basherpm/basher .basher
-  ! [[ "${SHELL}" == "/bin/bash" ]] || grep -q basher .bash_profile || cat <<EOM >> .bash_profile
+install_basher() {
+  push_dir "$HOME"
+  git clone git://github.com/basherpm/basher .basher
+  # TODO: use .profile if appropriate
+  grep -q basher .bash_profile 2>/dev/null || cat <<EOM >>.bash_profile
 
-export PATH="\${PATH}:\${HOME}/.basher/bin"
+export PATH="\$PATH:\$HOME"/.basher/bin
 eval "\$(basher init -)"
 EOM
   cd .basher/libexec
-  sed -i -e 's|${bin_path}:${PATH}|${PATH}:${bin_path}|' basher
+  # shellcheck disable=SC2016
+  sed -i -e 's|${bin_path}:${PATH}|$PATH:$bin_path|' basher
+  # shellcheck disable=SC2016
   sed -i -e 's|$BASHER_ROOT/cellar/bin:$PATH|$PATH:$BASHER_ROOT/cellar/bin|' -e 's|PATH $BASHER_ROOT/cellar/bin $PATH|PATH $PATH $BASHER_ROOT/cellar/bin|' basher-init
-  sed -i -e 's| --depth=1||' -e 's|https://github.com/|git@github.com:|' basher-_clone
+  sed -i -e 's| --depth=1||' -e 's|https://github.com/|git://github.com/|' basher-_clone
   pop_dir
 }
 
-install_jiff () {
-  export BASHER_ROOT="${InstallDir}"
-  "${InstallDir}/bin/basher" install binaryphile/jiff-personal
+install_jiff() {
+  export BASHER_ROOT="$InstallDir"
+  "$InstallDir"/bin/basher install binaryphile/jiff-personal
 }
 
-pop_dir () {
-  popd 2>/dev/null
+pop_dir() {
+  popd >/dev/null
 }
 
-push_dir () {
-  pushd "$1" 2>/dev/null
+push_dir() {
+  pushd "$1" >/dev/null
 }
 
-success_message () {
-  if [[ "${SHELL}" == "/bin/bash" ]]; then
+success_message() {
+  [[ $SHELL != /bin/bash ]] || {
     cat <<EOM
 
 You'll want to run "jiff set context" to set your context.
 
 EOM
-    exec bash
-  fi
+    exec bash -l
+  }
 
-  ! [[ "${SHELL}" == "/usr/bin/fish" ]] || cat <<EOM
+  [[ $SHELL != /usr/bin/fish ]] || cat <<EOM
 Done.
 
 You'll want to run the following command:
