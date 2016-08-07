@@ -41,7 +41,7 @@ EOM
 }
 
 install_git () {
-  read -d "" -a prereqs <<EOM || true
+  read -d "" -a prereqs <<EOM || :
 gcc
 curl-devel
 expat-devel
@@ -119,7 +119,7 @@ EOM
   pop_dir
 }
 
-return 0 2>/dev/null || true
+return 0 2>/dev/null || :
 set -o errexit
 set -o nounset
 set -o pipefail

@@ -38,7 +38,7 @@ set_taskdir () {
   esac
 }
 
-return 0 2>/dev/null || true
+return 0 2>/dev/null || :
 std::strict_mode on
 main "$@"
 std::is_not_match "${2:-}" "core" || push_core_task "$1"

@@ -22,6 +22,6 @@ install_vim () {
   rm "${Filename}"
 }
 
-return 2>/dev/null || true
+return 2>/dev/null || :
 strict_mode on
 main "${@}"

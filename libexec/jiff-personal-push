@@ -12,6 +12,6 @@ main() {
   std::pop_dir
 }
 
-return 0 2>/dev/null || true
+return 0 2>/dev/null || :
 std::strict_mode on
 main "$@"

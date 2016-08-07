@@ -19,6 +19,6 @@ main () {
   ssh -NfR 12345:localhost:22 pinch
 }
 
-return 2>/dev/null || true
+return 2>/dev/null || :
 strict_mode on
 main "{@}"

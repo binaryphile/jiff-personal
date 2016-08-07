@@ -112,6 +112,6 @@ success_message () {
   printf "file: %s at %'d\n" "$1" "$2"
 }
 
-return 0 2>/dev/null || true
+return 0 2>/dev/null || :
 strict_mode on
 main "$@"

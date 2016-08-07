@@ -65,7 +65,7 @@ Then check your login and switch to that window.
 EOM
 }
 
-return 0 2>/dev/null || true
+return 0 2>/dev/null || :
 set -o errexit
 set -o nounset
 set -o pipefail

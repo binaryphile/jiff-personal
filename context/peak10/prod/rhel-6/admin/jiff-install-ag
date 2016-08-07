@@ -6,7 +6,7 @@ source distrolib
 
 AgVersion="${AgVersion:-0.31.0}"
 
-read -d "" -a Prereqs <<EOM || true
+read -d "" -a Prereqs <<EOM || :
 pkgconfig
 automake
 gcc
@@ -43,6 +43,6 @@ install_prereqs () {
   done
 }
 
-return 0 2>/dev/null || true
+return 0 2>/dev/null || :
 strict_mode on
 main "$@"

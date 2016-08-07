@@ -27,6 +27,6 @@ install_lnav () {
   rm -rf "${LnavDir}"
 }
 
-return 0 2>/dev/null || true
+return 0 2>/dev/null || :
 strict_mode on
 main "${@}"

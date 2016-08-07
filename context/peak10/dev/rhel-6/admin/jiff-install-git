@@ -9,7 +9,7 @@ declare -r GitVersion=2.7.4
 declare -r GitDir="git-${GitVersion}"
 declare -r Filename="${GitDir}.tar.gz"
 
-read -d "" -a Prereqs <<EOM || true
+read -d "" -a Prereqs <<EOM || :
 gcc
 curl-devel
 expat-devel
@@ -51,6 +51,6 @@ install_prereqs () {
   done
 }
 
-return 0 2>/dev/null || true
+return 0 2>/dev/null || :
 strict_mode on
 main "$@"

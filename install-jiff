@@ -64,7 +64,7 @@ You'll also want to run "jiff set context" to set your context.
 EOM
 }
 
-return 0 2>/dev/null || true
+return 0 2>/dev/null || :
 set -o errexit
 set -o nounset
 set -o pipefail
