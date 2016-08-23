@@ -1,72 +1,66 @@
 #!/usr/bin/env bash
 
-declare -r InstallDir=/opt/app/avwobt4
-declare -r RepoUri=bertrand:tmp
-declare -r GitVersion=2.7.4
-declare -r GitDir="git-${GitVersion}"
-declare -r Filename="${GitDir}-static-avwob.tar.gz"
+readonly install_dir=/opt/app/avwobt4
+readonly repo_uri=bertrand:tmp
+readonly git_version=2.7.4
+readonly git_dir=git-$git_version
+readonly git_filename=$git_dir-static-avwob.tar.gz
 
-main () {
-  [[ -d "${InstallDir}" ]] || exit 1
-  export PATH="${PATH}:${InstallDir}/bin"
-  which git 2>/dev/null || install_git
+main() {
+  [[ -d $install_dir ]] && exit
+  export PATH=$PATH:$install_dir/bin
+  which git >/dev/null 2>&1 || install_git
   install_basher
   install_jiff
   success_message
 }
 
-install_basher () {
-  push_dir "${InstallDir}"
-  git clone git@github.com:basherpm/basher
+install_basher() {
+  push_dir $install_dir
+  git clone git@github.com:binaryphile/basher
   rm -rf basher/.git
   cp -r basher/* .
   rm -rf basher
-  cd libexec
-  sed -i -e 's|${bin_path}:${PATH}|${PATH}:${bin_path}|' basher
-  sed -i -e 's|$BASHER_ROOT/cellar/bin:$PATH|$PATH:$BASHER_ROOT/cellar/bin|' -e 's|$BASHER_ROOT/cellar/bin $PATH|$PATH $BASHER_ROOT/cellar/bin|' basher-init
-  sed -i -e 's|https://github.com/|git@github.com:|' -e 's|--depth=1||' basher-_clone
   pop_dir
 }
 
 install_git () {
-  cd "${InstallDir}"
-  scp "${RepoUri}/${Filename}" .
-  tar xzf "${Filename}"
-  rm "${Filename}"
+  cd "${install_dir}"
+  scp "${repo_uri}/${git_filename}" .
+  tar xzf "${git_filename}"
+  rm "${git_filename}"
 }
 
-install_jiff () {
-  export BASHER_ROOT="${InstallDir}"
-  "${InstallDir}/bin/basher" install binaryphile/jiff-personal
+install_jiff() {
+  export BASHER_ROOT=$install_dir
+  "$install_dir"/bin/basher install binaryphile/jiff-personal
 }
 
-pop_dir () {
-  popd >/dev/null
-}
+pop_dir() { popd >/dev/null ;}
 
-push_dir () {
-  pushd "$1" >/dev/null
-}
+push_dir() { pushd "$1" >/dev/null ;}
 
-success_message () {
+success_message() {
   cat <<EOM
 
 Note: jiff is not installed for your shell yet.
 
 You'll want to run:
 
-${InstallDir}/bin/jiff role user
-${InstallDir}/bin/jiff set context avwob
-${InstallDir}/bin/jiff install bashrc
-${InstallDir}/bin/jiff config jiff startup
+$install_dir/bin/jiff role user
+$install_dir/bin/jiff set context avwob
+$install_dir/bin/jiff install bashrc
+$install_dir/bin/jiff config jiff startup
 
 Then check your login and switch to that window.
 
 EOM
 }
 
-return 0 2>/dev/null || :
+return 0 2>/dev/null ||:
+
 set -o errexit
 set -o nounset
 set -o pipefail
+
 main "$@"

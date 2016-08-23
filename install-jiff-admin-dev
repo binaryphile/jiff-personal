@@ -15,7 +15,7 @@ main() {
   success_message
 }
 
-install_basher () {
+install_basher() {
   push_dir /etc/profile.d
   cat <<EOM | sudo tee basher.sh
   [[ -n \$BASHER_ROOT ]] || (( \$(/usr/bin/id -u) < 500 || \$(/usr/bin/id -u) == 10000 )) && return
