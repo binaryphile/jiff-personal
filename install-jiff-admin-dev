@@ -6,7 +6,7 @@ readonly git_version=2.7.4
 readonly git_dir=git-$git_version
 readonly git_filename=$git_dir.tar.gz
 
-main () {
+main() {
   [[ -d $install_dir ]] && exit
   which git >/dev/null 2>&1 || install_git
   vc_slash
@@ -35,7 +35,7 @@ EOM
   pop_dir
 }
 
-install_git () {
+install_git() {
   read -d "" -a prereqs <<'EOM' ||:
 gcc
 curl-devel
@@ -65,20 +65,16 @@ EOM
   pop_dir
 }
 
-install_jiff () {
+install_jiff() {
   export BASHER_ROOT=$install_dir
   "$install_dir"/bin/basher install binaryphile/jiff-personal
 }
 
-pop_dir () {
-  popd >/dev/null
-}
+pop_dir() { popd >/dev/null ;}
 
-push_dir () {
-  pushd "$1" >/dev/null
-}
+push_dir() { pushd "$1" >/dev/null ;}
 
-success_message () {
+success_message() {
   cat <<EOM
 
 Note: If you are using bash as your shell, run "exec bash" to load jiff
