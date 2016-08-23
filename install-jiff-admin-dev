@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-declare -r InstallDir=/opt/basher
-declare -r RepoUri=bertrand:tmp
-declare -r GitVersion=2.7.4
-declare -r GitDir="git-${GitVersion}"
-declare -r Filename="${GitDir}.tar.gz"
+readonly install_dir=/opt/basher
+readonly repo_uri=bertrand:tmp
+readonly git_version=2.7.4
+readonly git_dir=git-$git_version
+readonly git_filename=$git_dir.tar.gz
 
 main () {
-  ! [[ -d "${InstallDir}" ]] || exit 0
-  which git 2>/dev/null || install_git
+  [[ -d $install_dir ]] && exit
+  which git >/dev/null 2>&1 || install_git
   vc_slash
   install_basher
   install_jiff
@@ -16,32 +16,27 @@ main () {
 }
 
 install_basher () {
-  push_dir "/etc/profile.d"
+  push_dir /etc/profile.d
   cat <<EOM | sudo tee basher.sh
-_myid="\$(id -u)"
-if [[ "\${_myid}" -gt 199 ]] && [[ "\${_myid}" -ne 10000 ]] && [[ -z "\${BASHER_ROOT}" ]]; then
-  export BASHER_ROOT=${InstallDir}
-  export PATH="\${PATH}:${InstallDir}/bin"
+  [[ -n \$BASHER_ROOT ]] || (( \$(/usr/bin/id -u) < 500 || \$(/usr/bin/id -u) == 10000 )) && return
+  export BASHER_ROOT=$install_dir
+  export PATH=\$PATH:$install_dir/bin
   eval "\$(basher init -)"
-fi
 EOM
   git add --force basher.sh
   git commit --message "basher"
   cd /opt
   sudo mkdir basher
-  sudo chown "${USER}:prodadm" basher
+  sudo chown "$USER":prodadm basher
   chmod g+rwxs basher
   setfacl -m d:g::rwx basher
-  git clone git://github.com/basherpm/basher
+  git clone git://github.com/binaryphile/basher
   cd basher/libexec
-  sed -i -e 's|${bin_path}:${PATH}|${PATH}:${bin_path}|' basher
-  sed -i -e 's|$BASHER_ROOT/cellar/bin:$PATH|$PATH:$BASHER_ROOT/cellar/bin|' -e 's|$BASHER_ROOT/cellar/bin $PATH|$PATH $BASHER_ROOT/cellar/bin|' basher-init
-  sed -i -e 's|https://github.com/|git@github.com:|' -e 's|--depth=1||' basher-_clone
   pop_dir
 }
 
 install_git () {
-  read -d "" -a prereqs <<EOM || :
+  read -d "" -a prereqs <<'EOM' ||:
 gcc
 curl-devel
 expat-devel
@@ -52,26 +47,27 @@ zlib-devel
 perl-Error
 EOM
   for prereq in "${prereqs[@]}"; do
-    sudo yum -y install "${prereq}"
+    sudo yum -y install "$prereq"
   done
-  mkdir -p "${HOME}/tmp"
-  push_dir "${HOME}/tmp"
-  scp "${RepoUri}/${Filename}" .
-  tar xzf "${Filename}"
-  cd "${GitDir}"
+  mkdir -p "$HOME"/tmp
+  push_dir "$HOME"
+  scp "$repo_uri/$git_filename" tmp
+  cd tmp
+  tar xzf "$git_filename"
+  cd "$git_dir"
   make configure
   ./configure --prefix=/usr
   make all
   sudo make install
   cd ..
-  rm -rf "${GitDir}"
-  rm "${Filename}"
+  rm -rf "$git_dir"
+  rm "$git_filename"
   pop_dir
 }
 
 install_jiff () {
-  export BASHER_ROOT="${InstallDir}"
-  "${InstallDir}/bin/basher" install binaryphile/jiff-personal
+  export BASHER_ROOT=$install_dir
+  "$install_dir"/bin/basher install binaryphile/jiff-personal
 }
 
 pop_dir () {
@@ -95,15 +91,15 @@ EOM
 }
 
 vc_slash () {
-  push_dir "/"
+  push_dir /
   sudo mkdir -p .git
-  sudo chown "${USER}:prodadm" .git
+  sudo chown "$USER":prodadm .git
   chmod g+rwxs .git
   setfacl -m d:g::rwx .git
   sudo touch .gitignore
-  sudo chown "${USER}:prodadm" .gitignore
+  sudo chown "$USER":prodadm .gitignore
   chmod g+rw .gitignore
-  cat <<EOM > .gitignore
+  cat <<'EOM' > .gitignore
 *
 id_*
 *.pem
@@ -119,8 +115,10 @@ EOM
   pop_dir
 }
 
-return 0 2>/dev/null || :
+return 0 2>/dev/null ||:
+
 set -o errexit
 set -o nounset
 set -o pipefail
+
 main "$@"
