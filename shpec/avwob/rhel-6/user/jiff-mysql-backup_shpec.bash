@@ -44,7 +44,7 @@ describe mback_main
   end
 
   it "outputs its backup command if invoked with the dry_run flag"; ( _shpec_failures=0
-    result=$(mback_main dry_run_flag=1 full sample)
+    result=$(mback_main [dry_run_flag]=1 full sample)
     rc=$?
     get <<'    EOS'
       mysqldump --defaults-extra-file=/opt/app/avwobt4/etc/mysql/backup.cnf --all-databases --single-transaction
@@ -93,7 +93,7 @@ describe mbackup
     get <<'    EOS'
       mysqldump --defaults-extra-file=/opt/app/avwobt4/etc/mysql/backup.cnf --master-data --single-transaction avwob_production
     EOS
-    assert equal "$__" "$(mbackup master sample dry_run=1)"
+    assert equal "$__" "$(mbackup master sample dry_run_flag=1)"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
   end
 end
