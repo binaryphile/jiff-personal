@@ -22,7 +22,7 @@ mback_main () {
   case $command in
     full|master )
       [[ -n $arg ]] || die "$usage" 0
-      mbackup "$@"
+      mbackup "$command" "$arg" dry_run="$dry_run_flag"
       ;;
     * )
       put "Error: no such command '$command'"
@@ -32,14 +32,18 @@ mback_main () {
 }
 
 mbackup () {
+  local type=$1; shift
+  local host=$1; shift
+  $(grab dry_run from "$@")
   local command=()
 
-  case $1 in
+  case $type in
     full    ) command=( "${mysql_full_backup_command[@]}"   );;
     master  ) command=( "${mysql_master_backup_command[@]}" );;
     *       ) return 1
   esac
-  "${command[@]}" | gzip -v | redirect_to "$backup_dir/$1"-full-"$(date "$format")".sql.gz
+  (( dry_run )) && { put "${command[*]}"; return ;}
+  "${command[@]}" | gzip -v | redirect_to "$backup_dir/$host-$type-$(date "$format")".sql.gz
 }
 
 redirect_to  () { cat >"$1"      ;}
