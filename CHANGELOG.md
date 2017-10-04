@@ -16,7 +16,7 @@ Latest Changes
 
 -   bash coding conventions
 
--   added shpec testing
+-   added shpec testing for mysql backup
 
 -   added travis pipeline
 
