@@ -6,15 +6,28 @@ source concorde.bash
 $(grab 'mktempd rmtree' fromns concorde.macros)
 $(require_relative ../../../../context/avwob/rhel-6/user/jiff-mysql-backup)
 
-describe backup_full
-  it "calls mysqldump with arguments"; ( _shpec_failures=0
+describe backup
+  it "full calls mysqldump with arguments"; ( _shpec_failures=0
     stub_command mysqldump        'echo "$@"'
     stub_command gzip             cat
     stub_command redirect_to_file cat
-    stub_command date             'echo 1-2-3'
-    result=$(backup_full sample)
+    stub_command date
+    result=$(mbackup full sample)
     get <<'    EOS'
       --defaults-extra-file=/opt/app/avwobt4/etc/mysql/backup.cnf --all-databases --single-transaction
+    EOS
+    assert equal "$__" "$result"
+    return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
+  end
+
+  it "master calls mysqldump with arguments"; ( _shpec_failures=0
+    stub_command mysqldump        'echo "$@"'
+    stub_command gzip             cat
+    stub_command redirect_to_file cat
+    stub_command date
+    result=$(mbackup master sample)
+    get <<'    EOS'
+      --defaults-extra-file=/opt/app/avwobt4/etc/mysql/backup.cnf --master-data --single-transaction avwob_production
     EOS
     assert equal "$__" "$result"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))

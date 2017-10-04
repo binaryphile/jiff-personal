@@ -20,6 +20,9 @@ Latest Changes
 
 -   added travis pipeline
 
+Older Changes
+=============
+
 [v0.0.0] - 2017-10-03
 ---------------------
 
