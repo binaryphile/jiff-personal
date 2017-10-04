@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
-# Usage: jiff mysql backup full <host>
 
 get <<'EOS'
   Usage:
-    jiff mysql backup full <host>
+    jiff mysql backup [options] full|master <host>
+
+  Options:
+    -n|--dry-run      don't do anything and report backup command
 
   Arguments:
-    full          the type of backup
-    host          the name of the host to back up and filename
+    full|master     the type of backup
+    host            the name of the host to back up and filename
 EOS
 usage=$__
 
 mback_main () {
+  $(grab dry_run_flag from "$1"); shift
   local command=${1:-}
   local arg=${2:-}
 
@@ -21,7 +24,10 @@ mback_main () {
       [[ -n $arg ]] || die "$usage" 0
       mbackup "$@"
       ;;
-    * ) die "$usage" 0;;
+    * )
+      put "Error: no such command '$command'"
+      die "$usage" 0
+      ;;
   esac
 }
 
@@ -31,13 +37,13 @@ mbackup () {
   case $1 in
     full    ) command=( "${mysql_full_backup_command[@]}"   );;
     master  ) command=( "${mysql_master_backup_command[@]}" );;
-    * ) return 1
+    *       ) return 1
   esac
-  "${command[@]}" | gzip -v | redirect_to_file "$backup_dir/$1"-full-"$(date "$format")".sql.gz
+  "${command[@]}" | gzip -v | redirect_to "$backup_dir/$1"-full-"$(date "$format")".sql.gz
 }
 
-redirect_to_file  () { cat >"$1"      ;}
-timestamp         () { date "$format" ;}
+redirect_to  () { cat >"$1"      ;}
+timestamp    () { date "$format" ;}
 
 mback_init () {
   defaults=/opt/app/avwobt4/etc/mysql/backup.cnf
@@ -56,4 +62,9 @@ mback_init
 sourced && return
 strict_mode on
 
-mback_main "$@"
+get <<'EOS'
+  -n  --dry-run  ''  "don't do anything and report backup command"
+EOS
+
+$(parse_options __ "$@") || die "$usage" 0
+mback_main      __ "$@"  || die "$usage"
