@@ -6,17 +6,28 @@ source concorde.bash
 $(grab 'mktempd rmtree' fromns concorde.macros)
 $(require_relative ../../../../context/avwob/rhel-6/user/jiff-mysql-backup)
 
-describe backup
+# describe mback_main
+#   it ""; ( _shpec_failures=0
+#     stub_command date
+#     result=$(mbackup full sample)
+#     get <<'    EOS'
+#       --defaults-extra-file=/opt/app/avwobt4/etc/mysql/backup.cnf --all-databases --single-transaction
+#     EOS
+#     assert equal "$__" "$result"
+#     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
+#   end
+# end
+
+describe mbackup
   it "full calls mysqldump with arguments"; ( _shpec_failures=0
     stub_command mysqldump        'echo "$@"'
     stub_command gzip             cat
     stub_command redirect_to_file cat
     stub_command date
-    result=$(mbackup full sample)
     get <<'    EOS'
       --defaults-extra-file=/opt/app/avwobt4/etc/mysql/backup.cnf --all-databases --single-transaction
     EOS
-    assert equal "$__" "$result"
+    assert equal "$__" "$(mbackup full sample)"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
   end
 
@@ -25,11 +36,10 @@ describe backup
     stub_command gzip             cat
     stub_command redirect_to_file cat
     stub_command date
-    result=$(mbackup master sample)
     get <<'    EOS'
       --defaults-extra-file=/opt/app/avwobt4/etc/mysql/backup.cnf --master-data --single-transaction avwob_production
     EOS
-    assert equal "$__" "$result"
+    assert equal "$__" "$(mbackup master sample)"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
   end
 end
