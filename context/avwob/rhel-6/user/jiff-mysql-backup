@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Usage: jiff mysql backup full <host>
+
+get <<'EOS'
+  Usage:
+    jiff mysql backup full <host>
+
+  Arguments:
+    full          the type of backup
+    host          the name of the host to back up and filename
+EOS
+usage=$__
+
+mback_main () {
+  local command=${1:-}
+  local arg=${2:-}
+
+  [[ -n $command ]] || die "$usage" 0
+  case $command in
+    full )
+      [[ -n $arg ]] || die "$usage" 0
+      backup_full "$arg"
+      ;;
+    * ) die "$usage" 0;;
+  esac
+}
+
+backup_full () {
+  "${mysql_full_backup_command[@]}" | gzip -v | redirect_to_file "$backup_dir/$1"-full-"$(date "$format")".sql.gz
+}
+
+redirect_to_file  () { cat >"$1"      ;}
+timestamp         () { date "$format" ;}
+
+mback_init () {
+  defaults=/opt/app/avwobt4/etc/mysql/backup.cnf
+  database=avwob_production
+  format=+%Y-%m-%d-%H%M
+  backup_dir=/opt/app/avdata/backup
+
+  mysql_backup_command=( mysqldump --defaults-extra-file="$defaults" )
+  mysql_master_backup_command=( "${mysql_backup_command[@]}" --master-data --single-transaction "$database"       )
+  mysql_full_backup_command=( "${mysql_backup_command[@]}" --all-databases --single-transaction                   )
+  mysql_user_backup_command=( "${mysql_backup_command[@]}" --skip-extended-insert --single-transaction mysql user )
+}
+
+mback_init
+
+sourced && return
+strict_mode on
+
+mback_main "$@"

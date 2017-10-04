@@ -25,6 +25,15 @@ working on.
 Jiff tasks are not limited to scripts.  They can be any executable,
 although it is tailored for scripting.
 
+Requirements
+------------
+
+Jiff requires [concorde] v0.2.1 in order to work.  Install it first.
+
+Jiff also requires the following packages:
+
+-   gzip
+
 ## Installation
 
 ### AVWOB
@@ -103,4 +112,5 @@ priority list.
 
 [jiff]: https://github.com/binaryphile/jiff
 [jiff readme]: https://github.com/binaryphile/jiff/blob/master/README.md
+[concorde]: https://github.com/binaryphile/concorde/tree/v0.2.1
 [liquidprompt]: https://github.com/nojhan/liquidprompt
