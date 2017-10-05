@@ -8,8 +8,8 @@ get <<'EOS'
     -n|--dry-run      don't do anything and report backup command
 
   Arguments:
-    full|master     the type of backup
-    host            the name of the host to back up and filename
+    full|master       the type of backup
+    host              the name of the host to back up and filename
 EOS
 usage=$__
 
