@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+get <<'EOS'
+  Usage:  jiff mysql sync [-n] <slave> [master]
+
+  Options:
+    -n, --dry-run       don't do anything and report sync command
+
+  The sync command dumps the master's avwob database to the slave over the
+  network.  It does a single-transaction dump with master data.
+
+  If not supplied, master defaults to the current host.
+
+  It employs the backup user credentials on both ends.
+
+  **IMPORTANT:** This is a destructive operation.  It will wipe out the slave's
+  copy of the avwob database and replace it with the master's.
+EOS
+usage=$__
+
+msync_main () {
+  local optionh=$1; shift
+  local slave=${1:-}
+  local master=${2:-}
+
+  [[ -z $slave ]] && die "$usage"
+  msync "$slave" optionh master="$master"
+}
+
+msync () {
+  local slave=$1
+  $(grab dry_run_flag from "$2")
+  shift 2
+  $(grab master from "$@")
+  local dump_command
+  local load_command
+
+  load_command=( "${mysql_load_command[@]}" -h "$slave" "$database" )
+  case $master in
+    ''  ) dump_command=( "${mysql_dump_command[@]}"               "$database" );;
+    *   ) dump_command=( "${mysql_dump_command[@]}" -h "$master"  "$database" );;
+  esac
+  (( dry_run_flag )) && { put "${dump_command[*]} | ${load_command[*]}"; return ;}
+  "${dump_command[@]}" | "${load_command[@]}"
+}
+
+msync_init () {
+  defaults=/opt/app/avwobt4/etc/mysql/backup.cnf
+  database=avwob_production
+
+  mysql_dump_command=( mysqldump  --defaults-extra-file="$defaults" --single-transaction --master-data  )
+  mysql_load_command=( mysql      --defaults-extra-file="$defaults"                                     )
+}
+
+msync_init
+
+sourced && return
+strict_mode on
+
+get <<'EOS'
+  -n  --dry-run  ''  "don't do anything and report sync command"
+EOS
+
+$(parse_options __ "$@") || die "$usage" 0
+msync_main      __ "$@"  || die "$usage"
