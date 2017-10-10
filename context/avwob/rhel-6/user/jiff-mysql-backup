@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source concorde.bash
+
 get <<'EOS'
   Usage:
     jiff mysql backup [options] full|master <host>

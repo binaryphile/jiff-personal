@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source concorde.bash
+
 get <<'EOS'
   Usage:  jiff mysql sync [-n] <slave> [master]
 
