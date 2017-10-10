@@ -6,7 +6,9 @@ get <<'EOS'
   Usage:  jiff mysql sync [-n] <slave> [master]
 
     Options:
-      -n, --dry-run       don't do anything and report sync command
+      -n, --dry-run         don't do anything and report sync command
+      --master-port=<port>  the port of the master mysql instance
+      --slave-port=<port>   the port of the slave mysql instance
 
     The sync command dumps the master's avwob database to the slave over the
     network.  It does a single-transaction dump with master data.
@@ -21,27 +23,23 @@ EOS
 printf -v usage '\n%s\n' "$__"
 
 msync_main () {
-  local optionh=$1; shift
+  $(grab 'dry_run_flag master_port slave_port' from "$1"); shift
   local slave=${1:-}
-  local master=${2:-}
 
   [[ -z $slave ]] && die "$usage"
-  msync "$slave" optionh master="$master"
+  stuff 'dry_run_flag master_port slave_port' into ''
+  msync "$slave" __
 }
 
 msync () {
-  local slave=$1
-  $(grab dry_run_flag from "$2")
-  shift 2
-  $(grab master from "$@")
+  local slave=$1; shift
+  $(grab 'dry_run_flag master master_port slave_port' from "$@")
   local dump_command
   local load_command
 
-  load_command=( "${mysql_load_command[@]}" -h "$slave" "$database" )
-  case $master in
-    ''  ) dump_command=( "${mysql_dump_command[@]}"               "$database" );;
-    *   ) dump_command=( "${mysql_dump_command[@]}" -h "$master"  "$database" );;
-  esac
+  load_command=( "${mysql_load_command[@]}" -h "$slave"             "${slave_port:+-p $slave_port}"   "$database" )
+  dump_command=( "${mysql_dump_command[@]}" "${master:+-h $master}" "${master_port:+-p $master_port}" "$database" )
+
   (( dry_run_flag )) && { put "${dump_command[*]} | ${load_command[*]}"; return ;}
   "${dump_command[@]}" | "${load_command[@]}"
 }
@@ -60,7 +58,9 @@ sourced && return
 strict_mode on
 
 get <<'EOS'
-  -n  --dry-run  ''  "don't do anything and report sync command"
+  -n  --dry-run     ''            "don't do anything and report sync command"
+  ''  --master-port master_port   "the port of the slave mysql instance"
+  ''  --slave-port  slave_port    "the port of the slave mysql instance"
 EOS
 
 $(parse_options __ "$@") || die "$usage" 0

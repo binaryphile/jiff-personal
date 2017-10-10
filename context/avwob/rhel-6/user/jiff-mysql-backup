@@ -3,8 +3,7 @@
 source concorde.bash
 
 get <<'EOS'
-  Usage:
-    jiff mysql backup [options] full|master <host>
+  Usage:  jiff mysql backup [options] full|master <host>
 
     Options:
       -n|--dry-run      don't do anything and report backup command
@@ -16,7 +15,7 @@ EOS
 printf -v usage '\n%s\n' "$__"
 
 mback_main () {
-  local optionh=$1; shift
+  local optionh=${!1}; shift
   local command=${1:-}
   local arg=${2:-}
 
