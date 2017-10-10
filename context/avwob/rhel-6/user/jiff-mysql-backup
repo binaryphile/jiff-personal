@@ -13,7 +13,7 @@ get <<'EOS'
     full|master       the type of backup
     host              the name of the host to back up and filename
 EOS
-usage=$__
+printf -v usage '%s\n%s' "$__"
 
 mback_main () {
   local optionh=$1; shift
