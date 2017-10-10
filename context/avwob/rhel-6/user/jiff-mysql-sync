@@ -18,7 +18,7 @@ get <<'EOS'
   **IMPORTANT:** This is a destructive operation.  It will wipe out the slave's
   copy of the avwob database and replace it with the master's.
 EOS
-printf -v usage '%s\n%s' "$__"
+printf -v usage '\n%s\n' "$__"
 
 msync_main () {
   local optionh=$1; shift
