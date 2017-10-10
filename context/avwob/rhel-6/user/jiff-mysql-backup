@@ -6,12 +6,12 @@ get <<'EOS'
   Usage:
     jiff mysql backup [options] full|master <host>
 
-  Options:
-    -n|--dry-run      don't do anything and report backup command
+    Options:
+      -n|--dry-run      don't do anything and report backup command
 
-  Arguments:
-    full|master       the type of backup
-    host              the name of the host to back up and filename
+    Arguments:
+      full|master       the type of backup
+      host              the name of the host to back up and filename
 EOS
 printf -v usage '\n%s\n' "$__"
 

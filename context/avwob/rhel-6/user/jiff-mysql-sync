@@ -5,18 +5,18 @@ source concorde.bash
 get <<'EOS'
   Usage:  jiff mysql sync [-n] <slave> [master]
 
-  Options:
-    -n, --dry-run       don't do anything and report sync command
+    Options:
+      -n, --dry-run       don't do anything and report sync command
 
-  The sync command dumps the master's avwob database to the slave over the
-  network.  It does a single-transaction dump with master data.
+    The sync command dumps the master's avwob database to the slave over the
+    network.  It does a single-transaction dump with master data.
 
-  If not supplied, master defaults to the current host.
+    If not supplied, master defaults to the current host.
 
-  It employs the backup user credentials on both ends.
+    It employs the backup user credentials on both ends.
 
-  **IMPORTANT:** This is a destructive operation.  It will wipe out the slave's
-  copy of the avwob database and replace it with the master's.
+    **IMPORTANT:** This is a destructive operation.  It will wipe out the slave's
+    copy of the avwob database and replace it with the master's.
 EOS
 printf -v usage '\n%s\n' "$__"
 
