@@ -6,20 +6,22 @@ describe msync_main
   it "reports usage if not provided a slave argument"; ( _shpec_failures=0
     result=$(msync_main '')
     rc=$?
-    [[ $result == Usage:* ]]
+    [[ $result == $'\nUsage:'* ]]
     assert equal '0 0' "$? $rc"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
   end
 
   it "calls msync when given --dry-run"; ( _shpec_failures=0
     stub_command msync 'echo "$@"'
-    assert equal 'sample optionh master=' "$(msync_main [dry_run_flag]=1 sample)"
+    dry_run_flag=1
+    stuff dry_run_flag into ''
+    assert equal 'sample __' "$(msync_main __ sample)"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
   end
 
   it "calls msync when given a master"; ( _shpec_failures=0
     stub_command msync 'echo "$@"'
-    assert equal 'sample optionh master=example' "$(msync_main '' sample example)"
+    assert equal 'sample __' "$(msync_main '' sample example)"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
   end
 end
@@ -64,10 +66,11 @@ describe msync
   it "calls mysqldump with slave and master arguments"; ( _shpec_failures=0
     stub_command mysqldump  'echo "$@"'
     stub_command mysql      cat
+    result=$(msync sample master=example)
     get <<'    EOS'
       --defaults-extra-file=/opt/app/avwobt4/etc/mysql/backup.cnf --single-transaction --master-data -h example avwob_production
     EOS
-    assert equal "$__" "$(msync sample '' master=example)"
+    assert equal "$__" "$result"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
   end
 
