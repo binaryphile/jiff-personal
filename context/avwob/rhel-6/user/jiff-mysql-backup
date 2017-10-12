@@ -48,7 +48,6 @@ mbackup () {
 }
 
 redirect_to  () { cat >"$1"      ;}
-timestamp    () { date "$format" ;}
 
 mback_init () {
   defaults=/opt/app/avwobt4/etc/mysql/backup.cnf

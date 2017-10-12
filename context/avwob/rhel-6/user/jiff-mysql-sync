@@ -59,7 +59,7 @@ strict_mode on
 
 get <<'EOS'
   -n  --dry-run     ''            "don't do anything and report sync command"
-  ''  --master-port master_port   "the port of the slave mysql instance"
+  ''  --master-port master_port   "the port of the master mysql instance"
   ''  --slave-port  slave_port    "the port of the slave mysql instance"
 EOS
 
