@@ -10,7 +10,7 @@ describe mback_main
   it "reports usage if not provided a command"; ( _shpec_failures=0
     result=$(mback_main '')
     rc=$?
-    [[ $result == Usage:* ]]
+    [[ $result == $'\nUsage:'* ]]
     assert equal '0 0' "$? $rc"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
   end
@@ -18,7 +18,7 @@ describe mback_main
   it "reports usage if provided full but no arg"; ( _shpec_failures=0
     result=$(mback_main '' full)
     rc=$?
-    [[ $result == Usage:* ]]
+    [[ $result == $'\nUsage:'* ]]
     assert equal '0 0' "$? $rc"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
   end
@@ -26,7 +26,7 @@ describe mback_main
   it "reports usage if provided master but no arg"; ( _shpec_failures=0
     result=$(mback_main '' full)
     rc=$?
-    [[ $result == Usage:* ]]
+    [[ $result == $'\nUsage:'* ]]
     assert equal '0 0' "$? $rc"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
   end
@@ -36,6 +36,7 @@ describe mback_main
     rc=$?
     get <<'    EOS'
       Error: no such command 'blah'
+
       Usage:
     EOS
     [[ $result == "$__"* ]]
@@ -44,7 +45,9 @@ describe mback_main
   end
 
   it "outputs its backup command if invoked with the dry_run flag"; ( _shpec_failures=0
-    result=$(mback_main [dry_run_flag]=1 full sample)
+    dry_run_flag=1
+    stuff dry_run_flag into ''
+    result=$(mback_main __ full sample)
     rc=$?
     get <<'    EOS'
       mysqldump --defaults-extra-file=/opt/app/avwobt4/etc/mysql/backup.cnf --all-databases --single-transaction
@@ -105,15 +108,6 @@ describe redirect_to
     echo hello | redirect_to "$dir"/hola
     assert equal hello "$(< "$dir"/hola)"
     $rmtree "$dir"
-    return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
-  end
-end
-
-describe timestamp
-  it "generates a timestamp in the format YYYY-MM-DD-HHMM"; ( _shpec_failures=0
-    stub_command date 'echo "$@"'
-    result=$(timestamp)
-    assert equal +%Y-%m-%d-%H%M "$(timestamp)"
     return "$_shpec_failures" ); : $(( _shpec_failures += $? ))
   end
 end

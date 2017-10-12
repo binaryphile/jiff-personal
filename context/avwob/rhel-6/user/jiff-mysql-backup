@@ -15,7 +15,7 @@ EOS
 printf -v usage '\n%s\n' "$__"
 
 mback_main () {
-  local optionh=${!1}; shift
+  [[ -n $1 ]] && local optionh=${!1} || local optionh=''; shift
   local command=${1:-}
   local arg=${2:-}
 
