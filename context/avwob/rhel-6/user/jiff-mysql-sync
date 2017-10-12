@@ -3,7 +3,7 @@
 source concorde.bash
 
 get <<'EOS'
-  Usage:  jiff mysql sync [-n] <slave> [master]
+  Usage:  jiff mysql sync [options] <slave> [master]
 
     Options:
       -n, --dry-run         don't do anything and report sync command
@@ -37,8 +37,8 @@ msync () {
   local dump_command
   local load_command
 
-  load_command=( "${mysql_load_command[@]}" -h "$slave"             "${slave_port:+-p $slave_port}"   "$database" )
-  dump_command=( "${mysql_dump_command[@]}" "${master:+-h $master}" "${master_port:+-p $master_port}" "$database" )
+  load_command=( "${mysql_load_command[@]}" -h "$slave"           ${slave_port:+-P $slave_port}   "$database" )
+  dump_command=( "${mysql_dump_command[@]}" ${master:+-h $master} ${master_port:+-P $master_port} "$database" )
 
   (( dry_run_flag )) && { put "${dump_command[*]} | ${load_command[*]}"; return ;}
   "${dump_command[@]}" | "${load_command[@]}"
