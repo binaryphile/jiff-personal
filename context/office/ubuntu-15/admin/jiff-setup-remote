@@ -6,6 +6,7 @@ $(feature sremo)
 
 sremo_main () {
   local host=$1
+  local context=$2
   local remote_command_ary=()
   local github_command_ary=()
 
@@ -17,7 +18,7 @@ sremo_main () {
   ! already_running "${github_command_ary[*]}" && "${github_command_ary[@]}";:
 
   scp "$root"/share/setup "$host":
-  ssh -A "$host" ./setup
+  ssh -A "$host" "./setup $context"
 }
 
 already_running () {
