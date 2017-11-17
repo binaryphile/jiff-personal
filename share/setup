@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+
+usage='
+Usage:  setup <context>
+
+  Setup the local host with dotfiles and standard configuration.
+
+  <context> is one of the contexts in dotfiles/contexts.
+'
+
+setup_main () {
+  create_ssh_config
+  clone_dotfiles "$1"
+  setup_liquidprompt
+  setup_vim
+  setup_bashrc
+  setup_ssh
+}
+
+clone_dotfiles () {
+  local context=$1
+  local dotfiles
+  local file
+  local file_ary=()
+
+  dotfiles=$HOME/dotfiles
+  [[ ! -d $dotfiles ]] && mkdir -- "$dotfiles";:
+  chmod -- 700 "$dotfiles"
+  setfacl -m d:g::-,d:o:- -- "$dotfiles"
+  git clone git@github.com:binaryphile/dotfiles
+  file_ary=(
+    bash/dir_colors
+    bash/inputrc
+    gitconfig
+    gitignore_global
+  )
+  for file in "${file_ary[@]}"; do
+    ln -sf -- "$dotfiles/$file" "$HOME"/."${file##*/}"
+  done
+  ln -sf -- contexts/"$context" "$dotfiles"/context
+}
+
+create_ssh_config () {
+  local config
+  local ssh
+
+  ssh=$HOME/.ssh
+  config=$ssh/config
+  [[ ! -d $ssh ]] && mkdir -- "$ssh";:
+  chmod -- 700 "$ssh"
+  { [[ -e $config ]] && grep -vq github.com "$config" ;} && {
+    cat <<'    EOS' >>"$config"
+      Host github.com
+      Hostname localhost
+      Port 12346
+    EOS
+  };:
+  chmod -- 600 "$config"
+}
+
+setup_bashrc () {
+  local bashrc
+
+  bashrc=$HOME/.bashrc
+  { [[ -e $bashrc ]] && grep -vq bashrc=\$HOME/dotfiles/bash/bashrc "$bashrc" ;} && {
+    cat <<'    EOS' >>"$bashrc"
+      bashrc=$HOME/dotfiles/bash/bashrc
+      [[ -e $bashrc ]] && source "$bashrc"
+      unset -v bashrc
+    EOS
+  }
+}
+
+setup_liquidprompt () {
+  local config
+  local dotfiles
+  local liquidprompt
+
+  config=$HOME/.config
+  liquidprompt=$config/liquidprompt
+  dotfiles=$HOME/dotfiles/liquidprompt
+  [[ ! -d $liquidprompt ]] && mkdir -p -- "$liquidprompt"
+  ln -sf -- "$dotfiles"/liquidpromptrc  "$config"
+  ln -sf -- "$dotfiles"/liquid.theme    "$liquidprompt"
+  ln -sf -- "$dotfiles"/liquidprompt    "$liquidprompt"
+}
+
+setup_ssh () {
+  local dotfiles
+  local ssh
+
+  dotfiles=$HOME/dotfiles/ssh
+  ssh=$HOME/.ssh
+  rm -- "$ssh"/config
+  ln -sf -- "$dotfiles"/* "$ssh"
+  cp -- "$dotfiles"/authorized_keys "$ssh"/authorized_keys2
+}
+
+setup_vim () {
+  local vim
+
+  vim=$HOME/.vim
+  [[ ! -d $vim ]] && git clone --branch essential git@github.com:binaryphile/dot_vim "$vim";:
+}
+
+sourced () {
+  [[ ${FUNCNAME[1]} == source ]]
+}
+
+strict_mode () {
+  set -o errexit
+  set -o nounset
+  set -o pipefail
+}
+
+sourced && return
+strict_mode on
+
+(( $# )) || { echo "$usage"; exit ;}
+setup_main "$@"

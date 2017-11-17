@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Usage: jiff setup-remote
+
+source concorde.bash
+$(feature sremo)
+
+sremo_main () {
+  local host=$1
+  local remote_command_ary=()
+  local github_command_ary=()
+
+  $(bring root)
+  remote_command_ary=( ssh -NfR 12346:localhost:12346 "$host"   )
+  github_command_ary=( ssh -NfL 12346:github.com:22   localhost )
+
+  ! already_running "${remote_command_ary[*]}" && "${remote_command_ary[@]}";:
+  ! already_running "${github_command_ary[*]}" && "${github_command_ary[@]}";:
+
+  scp "$root"/share/setup "$host":
+  ssh -A "$host" ./setup
+}
+
+already_running () {
+  (( $(pgrep -cf "$1") ))
+}
+
+sourced && return
+strict_mode on
+
+sremo_main "$@"
