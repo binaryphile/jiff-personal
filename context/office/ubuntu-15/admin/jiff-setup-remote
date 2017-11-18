@@ -2,7 +2,7 @@
 # Usage: jiff setup-remote
 
 source concorde.bash
-$(feature sremo)
+$(feature sremo depth=4)
 
 sremo_main () {
   local host=$1
@@ -10,15 +10,17 @@ sremo_main () {
   local remote_command_ary=()
   local github_command_ary=()
 
-  $(bring root)
+  $(grab root fromns sremo)
   remote_command_ary=( ssh -NfR 12346:localhost:12346 "$host"   )
   github_command_ary=( ssh -NfL 12346:github.com:22   localhost )
 
   ! already_running "${remote_command_ary[*]}" && "${remote_command_ary[@]}";:
   ! already_running "${github_command_ary[*]}" && "${github_command_ary[@]}";:
 
+  ssh "$host" "mkdir -pm 700 \"\$HOME\"/.ssh; echo '$(< $HOME/.ssh/authorized_keys)' >>\"\$HOME\"/.ssh/authorized_keys2; chmod 600 -- \"\$HOME\"/.ssh/authorized_keys2"
+  ssh "$host" '! type git >/dev/null 2>&1 && [[ ! -e $HOME/git-2.7.4-static-avwob.tar.gz ]]' && scp "$HOME"/misc/git-2.7.4-static-avwob.tar.gz "$host": ;:
   scp "$root"/share/setup "$host":
-  ssh -A "$host" "./setup $context"
+  ssh "$host" "./setup $context"
 }
 
 already_running () {

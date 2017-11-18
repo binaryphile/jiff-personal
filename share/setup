@@ -1,17 +1,25 @@
 #!/usr/bin/env bash
 
-usage='
-Usage:  setup <context>
+setup_globals () {
+  usage='
+    Usage:  setup <context>
 
-  Setup the local host with dotfiles and standard configuration.
+      Setup the local host with dotfiles and standard configuration.
 
-  <context> is one of the contexts in dotfiles/contexts.
-'
+      <context> is one of the contexts in dotfiles/contexts.'
+
+  chmod='chmod --'
+  ln='ln --symbolic --force --'
+  mkdir='mkdir --parents --'
+  rm='rm --force --'
+}
 
 setup_main () {
   local context=$1
   local home=${2:-$HOME}
 
+  touch .hushlogin
+  setup_git           "$home"
   create_ssh_config   "$home"
   clone_dotfiles      "$home" "$context"
   clone_dotvim        "$home"
@@ -29,9 +37,9 @@ clone_dotfiles () {
 
   dotfiles=$home/dotfiles
   [[ ! -d $dotfiles ]] && mkdir -- "$dotfiles";:
-  chmod -- 700 "$dotfiles"
+  $chmod 700 "$dotfiles"
   setfacl -m d:g::-,d:o:- -- "$dotfiles"
-  git clone git@github.com:binaryphile/dotfiles "$dotfiles"
+  git clone git://github.com/binaryphile/dotfiles "$dotfiles"
   file_ary=(
     bash/dir_colors
     bash/inputrc
@@ -39,18 +47,21 @@ clone_dotfiles () {
     gitignore_global
   )
   for file in "${file_ary[@]}"; do
-    ln --symbolic --force -- "$dotfiles/$file" "$home"/."${file##*/}"
+    $ln "$dotfiles/$file" "$home"/."${file##*/}"
   done
-  ln --symbolic --force -- contexts/"$context" "$dotfiles"/context
+  $ln contexts/"$context" "$dotfiles"/context
 }
 
-clone_dotvim () {
+clone_dotvim () { (
   local home=$1
   local vim
 
   vim=$home/.vim
-  [[ ! -d $vim ]] && git clone --branch essential git@github.com:binaryphile/dot_vim "$vim";:
-}
+  [[ -d $vim ]] && return
+  git clone --branch essential git://github.com/binaryphile/dot_vim "$vim"
+  cd "$vim"
+  git remote set-url origin git@github.com:binaryphile/dot_vim
+) }
 
 create_ssh_config () {
   local home=$1
@@ -60,7 +71,7 @@ create_ssh_config () {
   ssh=$home/.ssh
   config=$ssh/config
   [[ ! -d $ssh ]] && mkdir -- "$ssh";:
-  chmod -- 700 "$ssh"
+  $chmod 700 "$ssh"
   { [[ ! -e $config ]] || ! grep --quiet 'Host github.com' "$config" ;} && {
     [[ -e $config ]] && echo >>"$config";:
     cat <<'    EOS' >>"$config"
@@ -69,7 +80,7 @@ create_ssh_config () {
       Port 12346
     EOS
   };:
-  chmod -- 600 "$config"
+  $chmod 600 "$config"
 }
 
 setup_bashrc () {
@@ -87,6 +98,24 @@ setup_bashrc () {
   }
 }
 
+setup_git () {
+  local home=$1
+  local git
+  local local
+
+  type git >/dev/null 2>&1 && return
+
+  git=$home/git-2.7.4-static-avwob.tar.gz
+  [[ -e $git ]] || return
+
+  local=$home/.local
+  [[ ! -d $local ]] && $mkdir "$local";:
+  tar xzf "$git" -C "$local"
+  [[ :$PATH: == *:"$home"/.local/bin:* ]] && return
+  echo $'\n[[ :$PATH: != *:"$HOME"/.local/bin:* ]] && PATH+=:$HOME/.local/bin' >>"$home"/.bashrc
+  PATH+=:$home/.local/bin
+}
+
 setup_liquidprompt () {
   local home=$1
   local config
@@ -96,10 +125,10 @@ setup_liquidprompt () {
   config=$home/.config
   liquidprompt=$config/liquidprompt
   dotfiles=$home/dotfiles/liquidprompt
-  [[ ! -d $liquidprompt ]] && mkdir --parents -- "$liquidprompt"
-  ln --symbolic --force -- "$dotfiles"/liquidpromptrc  "$config"
-  ln --symbolic --force -- "$dotfiles"/liquid.theme    "$liquidprompt"
-  ln --symbolic --force -- "$dotfiles"/liquidprompt    "$liquidprompt"
+  [[ ! -d $liquidprompt ]] && $mkdir "$liquidprompt"
+  $ln "$dotfiles"/liquidpromptrc  "$config"
+  $ln "$dotfiles"/liquid.theme    "$liquidprompt"
+  $ln "$dotfiles"/liquidprompt    "$liquidprompt"
 }
 
 setup_ssh () {
@@ -109,10 +138,9 @@ setup_ssh () {
 
   dotfiles=$home/dotfiles/ssh
   ssh=$home/.ssh
-  [[ ! -d $ssh ]] && mkdir --parents -- "$ssh"
-  rm --force -- "$ssh"/config
-  ln --symbolic --force -- "$dotfiles"/* "$ssh"
-  cp --force -- "$dotfiles"/authorized_keys "$ssh"/authorized_keys2
+  [[ ! -d $ssh ]] && $mkdir "$ssh"
+  $rm "$ssh"/config
+  $ln "$dotfiles"/* "$ssh"
 }
 
 sourced () {
@@ -125,6 +153,7 @@ strict_mode () {
   set -o pipefail
 }
 
+setup_globals
 sourced && return
 strict_mode on
 
