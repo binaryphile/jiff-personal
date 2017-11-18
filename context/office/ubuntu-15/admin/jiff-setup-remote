@@ -7,19 +7,32 @@ $(feature sremo depth=4)
 sremo_main () {
   local host=$1
   local context=$2
-  local remote_command_ary=()
-  local github_command_ary=()
+  local statements
 
   $(grab root fromns sremo)
-  remote_command_ary=( ssh -NfR 12346:localhost:12346 "$host"   )
-  github_command_ary=( ssh -NfL 12346:github.com:22   localhost )
-
-  ! already_running "${remote_command_ary[*]}" && "${remote_command_ary[@]}";:
-  ! already_running "${github_command_ary[*]}" && "${github_command_ary[@]}";:
-
-  ssh "$host" "mkdir -pm 700 \"\$HOME\"/.ssh; echo '$(< $HOME/.ssh/authorized_keys)' >>\"\$HOME\"/.ssh/authorized_keys2; chmod 600 -- \"\$HOME\"/.ssh/authorized_keys2"
-  ssh "$host" '! type git >/dev/null 2>&1 && [[ ! -e $HOME/git-2.7.4-static-avwob.tar.gz ]]' && scp "$HOME"/misc/git-2.7.4-static-avwob.tar.gz "$host": ;:
+  statements="
+    mkdir -pm 700 \"\$HOME\"/.ssh
+    echo '$(< $HOME/.ssh/authorized_keys)' >\"\$HOME\"/.ssh/authorized_keys2
+    chmod 600 -- \"\$HOME\"/.ssh/authorized_keys2
+  "
+  put "creating authorized_keys2"
+  ssh "$host" "$statements"
+  ssh "$host" '! type git >/dev/null 2>&1 && [[ ! -e $HOME/git-2.7.4-static-avwob.tar.gz ]]' && {
+    put "copying git"
+    scp "$HOME"/misc/git-2.7.4-static-avwob.tar.gz "$host":
+  };:
+  put "copying setup script"
   scp "$root"/share/setup "$host":
+  statements='
+    mkdir -pm 700 "$HOME"/dotfiles
+    setfacl -m d:g::-,d:o:- "$HOME"/dotfiles
+  '
+  put "setting dotfiles directory permissions"
+  ssh "$host" "$statements"
+  put "copying dotfiles"
+  rsync -a "$HOME"/dotfiles/ "$host":dotfiles
+  put "copying vim configuration"
+  rsync -a "$HOME"/.vim/ "$host":.vim
   ssh "$host" "./setup $context"
 }
 

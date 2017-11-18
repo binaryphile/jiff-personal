@@ -18,69 +18,20 @@ setup_main () {
   local context=$1
   local home=${2:-$HOME}
 
+  echo "hushing login"
   touch .hushlogin
+  echo "setting up git"
   setup_git           "$home"
-  create_ssh_config   "$home"
-  clone_dotfiles      "$home" "$context"
-  clone_dotvim        "$home"
+  echo "setting up dotfiles"
+  setup_dotfiles      "$home" "$context"
+  echo "setting up vim configuration"
+  setup_vim           "$home"
+  echo "setting up liquidprompt"
   setup_liquidprompt  "$home"
+  echo "setting up bashrc"
   setup_bashrc        "$home"
+  echo "setting up ssh"
   setup_ssh           "$home"
-}
-
-clone_dotfiles () {
-  local home=$1
-  local context=$2
-  local dotfiles
-  local file
-  local file_ary=()
-
-  dotfiles=$home/dotfiles
-  [[ ! -d $dotfiles ]] && mkdir -- "$dotfiles";:
-  $chmod 700 "$dotfiles"
-  setfacl -m d:g::-,d:o:- -- "$dotfiles"
-  git clone git://github.com/binaryphile/dotfiles "$dotfiles"
-  file_ary=(
-    bash/dir_colors
-    bash/inputrc
-    gitconfig
-    gitignore_global
-  )
-  for file in "${file_ary[@]}"; do
-    $ln "$dotfiles/$file" "$home"/."${file##*/}"
-  done
-  $ln contexts/"$context" "$dotfiles"/context
-}
-
-clone_dotvim () { (
-  local home=$1
-  local vim
-
-  vim=$home/.vim
-  [[ -d $vim ]] && return
-  git clone --branch essential git://github.com/binaryphile/dot_vim "$vim"
-  cd "$vim"
-  git remote set-url origin git@github.com:binaryphile/dot_vim
-) }
-
-create_ssh_config () {
-  local home=$1
-  local config
-  local ssh
-
-  ssh=$home/.ssh
-  config=$ssh/config
-  [[ ! -d $ssh ]] && mkdir -- "$ssh";:
-  $chmod 700 "$ssh"
-  { [[ ! -e $config ]] || ! grep --quiet 'Host github.com' "$config" ;} && {
-    [[ -e $config ]] && echo >>"$config";:
-    cat <<'    EOS' >>"$config"
-      Host github.com
-      Hostname localhost
-      Port 12346
-    EOS
-  };:
-  $chmod 600 "$config"
 }
 
 setup_bashrc () {
@@ -97,6 +48,29 @@ setup_bashrc () {
     EOS
   }
 }
+
+setup_dotfiles () { (
+  local home=$1
+  local context=$2
+  local dotfiles
+  local file
+  local file_ary=()
+
+  dotfiles=$home/dotfiles
+  cd "$dotfiles"
+  git reset --hard origin/master
+  file_ary=(
+    bash/dir_colors
+    bash/inputrc
+    gitconfig
+    gitignore_global
+  )
+  for file in "${file_ary[@]}"; do
+    $ln "$dotfiles/$file" "$home"/."${file##*/}"
+  done
+  $rm "$dotfiles"/context
+  $ln contexts/"$context" "$dotfiles"/context
+) }
 
 setup_git () {
   local home=$1
@@ -142,6 +116,16 @@ setup_ssh () {
   $rm "$ssh"/config
   $ln "$dotfiles"/* "$ssh"
 }
+
+setup_vim () { (
+  local home=$1
+  local vim
+
+  vim=$home/.vim
+  [[ ! -d $vim ]] && return;:
+  cd "$vim"
+  git checkout essential
+) }
 
 sourced () {
   [[ ${FUNCNAME[1]} == source ]]
