@@ -4,6 +4,11 @@
 source concorde.bash
 $(feature sremo depth=4)
 
+sremo_globals () {
+  rsync='rsync --archive --compress --partial --'
+  rsyncp='rsync --archive --compress --partial --progress --'
+}
+
 sremo_main () {
   local host=$1
   local context=$2
@@ -19,10 +24,10 @@ sremo_main () {
   ssh "$host" "$statements"
   ssh "$host" '! type git >/dev/null 2>&1 && [[ ! -e $HOME/git-2.7.4-static-avwob.tar.gz ]]' && {
     put "copying git"
-    scp "$HOME"/misc/git-2.7.4-static-avwob.tar.gz "$host":
+    $rsyncp "$HOME"/misc/git-2.7.4-static-avwob.tar.gz "$host":
   };:
   put "copying setup script"
-  scp "$root"/share/setup "$host":
+  $rsyncp "$root"/share/setup "$host":
   statements='
     mkdir -pm 700 "$HOME"/dotfiles
     setfacl -m d:g::-,d:o:- "$HOME"/dotfiles
@@ -30,9 +35,9 @@ sremo_main () {
   put "setting dotfiles directory permissions"
   ssh "$host" "$statements"
   put "copying dotfiles"
-  rsync -a "$HOME"/dotfiles/ "$host":dotfiles
+  $rsync "$HOME"/dotfiles/ "$host":dotfiles
   put "copying vim configuration"
-  rsync -a "$HOME"/.vim/ "$host":.vim
+  $rsync "$HOME"/.vim/ "$host":.vim
   ssh "$host" "./setup $context"
 }
 
@@ -40,6 +45,7 @@ already_running () {
   (( $(pgrep -cf "$1") ))
 }
 
+sremo_globals
 sourced && return
 strict_mode on
 
