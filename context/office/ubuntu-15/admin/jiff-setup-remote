@@ -4,12 +4,11 @@
 source concorde.bash
 $(feature sremo depth=4)
 
-sremo_globals () {
-  rsync='rsync --archive --compress --partial --'
-  rsyncp='rsync --archive --compress --partial --progress --'
-}
+echo='printf -- %s\n'
+rsync='rsync --archive --compress --partial --'
+rsyncp='rsync --archive --compress --partial --progress --'
 
-sremo_main () {
+main () {
   local host=$1
   local context=$2
   local statements
@@ -45,8 +44,8 @@ already_running () {
   (( $(pgrep -cf "$1") ))
 }
 
-sremo_globals
 sourced && return
 strict_mode on
+$echo
 
-sremo_main "$@"
+main "$@"
