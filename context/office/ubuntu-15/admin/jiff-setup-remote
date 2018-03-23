@@ -16,7 +16,8 @@ main () {
   $(grab root fromns sremo)
   statements="
     mkdir -pm 700 \"\$HOME\"/.ssh
-    echo '$(< $HOME/.ssh/authorized_keys)' >\"\$HOME\"/.ssh/authorized_keys2
+    [[ -s \$HOME/.ssh/authorized_keys ]] && cat \"\$HOME\"/.ssh/authorized_keys >\"\$HOME\"/.ssh/authorized_keys2
+    echo '$(< $HOME/.ssh/authorized_keys)' >>\"\$HOME\"/.ssh/authorized_keys2
     chmod 600 -- \"\$HOME\"/.ssh/authorized_keys2
   "
   put "creating authorized_keys2"
