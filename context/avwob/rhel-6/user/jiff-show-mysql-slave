@@ -1,90 +1,130 @@
 #!/usr/bin/env bash
-# Usage: jiff show-mysql-slave
 
-source stdlib
+source concorde.bash
 
-declare -r DefaultsFile=/opt/app/avwobt4/etc/mysql/replication.cnf
-declare -r ExpectedMasterHost=135.89.20.86
-declare -r ExpectedMasterPort=3306
+get <<'EOS'
+  Usage:  jiff show mysql slave <slave> [master]
 
-declare -r SlaveHost=135.89.175.30
-declare -r SlavePort=3306
+  Options:
+    --master-port=<port>          replication master port
+    --slave-port=<port>           replication slave port
+    --defaults=<config_file>      mysql config file with credentials
 
-declare -r MysqlCommand="mysql --defaults-extra-file=${DefaultsFile} "
-declare -r MasterCommand="$MysqlCommand -h $ExpectedMasterHost -P $ExpectedMasterPort"
-declare -r SlaveCommand="$MysqlCommand -h $SlaveHost -P $SlavePort"
+  The show mysql slave command checks the status of the master and slave
+  replicants, then reports on any errors it finds.
+
+  If not supplied, master defaults to the current host.
+
+  It employs the replication user credentials by default on both ends.
+EOS
+_usage=$__
+
+_echo='printf \x20\x20%s\n'
+
+_default_port=3306
+_default_config=/opt/app/avwobt4/etc/mysql/replication.cnf
 
 main () {
-  local error_count
-  local errors
-  local pos_difference
+  local defaults=$_default_config
+  local master_port=$_default_port
+  local slave_port=$_default_port
+  $(grab '
+    defaults
+    master_port
+    slave_port
+  ' from "$1"); shift
+  local slave=${1:-}
+  local master=${2:-}
+  local hshmaster_values
+  local hshslave_values
+  local mysql_command
+  local master_command
+  local slave_command
+
+  [[ -z $slave ]] && die "$_usage"
+  mysql_command="mysql --defaults-extra-file=$defaults"
+  master_command="$mysql_command -h $master -P $master_port"
+  slave_command="$mysql_command -h $slave -P $default_port"
+
+  hshmaster_values='m_binlog=File m_position=Position'
+  __=$($master_command -e 'SHOW MASTER STATUS\G')
+  extract_values "$hshmaster_values" "$__"
+  $(grab '*' from "$__")
+
+  hshslave_values='m_host=Master_Host m_port=Master_Port m_logfile=Master_Log_File m_logpos=Read_Master_Log_Pos s_io_running=Slave_IO_Running s_sql_running=Slave_SQL_Running'
+  __=$($slave_command  -e 'SHOW SLAVE STATUS\G')
+  extract_values "$hshslave_value" "$__"
+  $(grab '*' from "$__")
+
+  replication_report  "$m_host"   "$m_port"       "$m_logfile"      \
+                      "$m_logpos" "$s_io_running" "$s_sql_running"  \
+                      "$m_binlog" "$m_position"   "$master"         \
+                      "$master_port"
+  $(local_ary errors="$__")
+
+  case ${#errors[@]} in
+    0 ) $echo "Replication OK" "file: $m_logfile at $m_logpos";;
+    * ) $echo "${errors[@]}"; return 1                        ;;
+  esac
+}
+
+extract () {
+  __=$(grep -w "$1" <<<"$2" | head -1 | awk '{print $2}')
+}
+
+extract_values () {
+  $(local_hsh hvalues="$1")
+  local -A hresults=()
+  local item
+
+  for item in "${!hvalues[@]}"; do
+    extract "${hvalues[$item]}" "$2"
+    hresults[$item]=$__
+  done
+  repr hresults
+}
+
+replication_report () {
+  local master_host=$1
+  local master_port=$2
+  local master_logfile=$3
+  local master_logpos=$4
+  local slave_io_running=$5
+  local slave_sql_running=$6
+  local master_binlog=$7
+  local master_position=$8
+  local m_host=$9
+  local m_port=${10}
   local count
+  local errors=()
+  local messages=()
+  local pos_delta
 
-  mkdir -p "${HOME}/tmp"
-  cd "${HOME}/tmp"
-  $MasterCommand -e 'SHOW MASTER STATUS\G' > mstatus
-  $SlaveCommand -e 'SHOW SLAVE STATUS\G' > sstatus
-
-  MasterBinlog=$(extract_value mstatus File )
-  MasterPosition=$(extract_value mstatus Position )
-
-  MasterHost=$(extract_value sstatus Master_Host)
-  MasterPort=$(extract_value sstatus Master_Port)
-  MasterLogFile=$(extract_value sstatus Master_Log_File)
-  ReadMasterLogPos=$(extract_value sstatus Read_Master_Log_Pos)
-  SlaveIORunning=$(extract_value sstatus Slave_IO_Running)
-  SlaveSQLRunning=$(extract_value sstatus Slave_SQL_Running)
-
-  error_count=0
-  if [[ "$MasterHost" != "$ExpectedMasterHost" ]]; then
-    errors[$error_count]="the slave is not replicating from the host that it is supposed to"
-    error_count=$(($error_count+1))
-  fi
-
-  if [[ "$MasterPort" != "$ExpectedMasterPort" ]]; then
-    errors[$error_count]="the slave is not replicating from the host that it is supposed to"
-    error_count=$(($error_count+1))
-  fi
-
-  if [[ "$MasterBinlog" != "$MasterLogFile" ]]; then
-    errors[$error_count]="master binlog ($MasterBinlog) and MasterLogFile ($MasterLogFile) differ"
-    error_count=$(($error_count+1))
-  fi
-
-  pos_difference=$(echo ${MasterPosition}-$ReadMasterLogPos|bc)
-
-  if [[ $pos_difference -gt 1000 ]]; then
-    errors[$error_count]="The slave is lagging behind of $pos_difference"
-    error_count=$(($error_count+1))
-  fi
-
-  if [[ "$SlaveIORunning" == "No" ]]; then
-    errors[$error_count]="Replication is stopped"
-    error_count=$(($error_count+1))
-  fi
-
-  if [[ "$SlaveSQLRunning" == "No" ]]; then
-    errors[$error_count]="Replication (SQL) is stopped"
-    error_count=$(($error_count+1))
-  fi
-
-  if [[ $error_count -gt 0 ]]; then
-    while [ "$count" != "$error_count" ]
-    do
-        echo "${errors[$CNT]}"
-        count=$(($count+1))
-    done
-  else
-    echo "Replication OK"
-    printf "file: %s at %'d\n" $MasterLogFile  $ReadMasterLogPos
-  fi
-  rm mstatus sstatus
+  pos_delta=$(( master_position - master_logpos ))
+  messages=(
+    [0]="The slave is not replicating from the host that it is supposed to"
+    [1]="Master binlog ($master_binlog) and MasterLogFile ($master_logfile) differ"
+    [2]="Replication is stopped"
+    [3]="Replication (SQL) is stopped"
+    [4]="The slave is lagging behind by $pos_delta"
+  )
+  [[ $master_host       !=  "$m_host"         ]] && errors+=( "${messages[0]}" )
+  [[ $master_port       !=  "$m_port"         ]] && errors+=( "${messages[0]}" )
+  [[ $master_binlog     !=  "$master_logfile" ]] && errors+=( "${messages[1]}" )
+  [[ $slave_io_running  ==  No                ]] && errors+=( "${messages[2]}" )
+  [[ $slave_sql_running ==  No                ]] && errors+=( "${messages[3]}" )
+  (( pos_delta          >   1000              )) && errors+=( "${messages[4]}" )
+  repr errors
 }
 
-function extract_value {
-  grep -w "${2}" "${1}" | awk '{print $2}'
-}
-
-return 0 2>/dev/null || true
+sourced && return
 strict_mode on
-main "${@}"
+
+get <<'EOS'
+  ''  --defaults    defaults      "don't do anything and report sync command"
+  ''  --master-port master_port   "the port of the master mysql instance"
+  ''  --slave-port  slave_port    "the port of the slave mysql instance"
+EOS
+
+$(parse_options __ "$@") || die "$usage" 0
+main "$__" "$@"

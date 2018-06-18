@@ -1,5 +1,5 @@
-export TMPDIR=$HOME/tmp
-mkdir -p "$TMPDIR"
+export TMPDIR=${TMPDIR:-$HOME/tmp}
+mkdir --parents -- "$TMPDIR"
 
 source concorde.bash
 
