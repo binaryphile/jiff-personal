@@ -95,7 +95,6 @@ replication_report () {
   local master_position=$8
   local m_host=$9
   local m_port=${10}
-  local count
   local errors=()
   local messages=()
   local pos_delta

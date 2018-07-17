@@ -20,39 +20,35 @@ get <<'EOS'
     **IMPORTANT:** This is a destructive operation.  It will wipe out the slave's
     copy of the avwob database and replace it with the master's.
 EOS
-printf -v usage '\n%s\n' "$__"
+printf -v _usage '\n%s\n' "$__"
 
-msync_main () {
+_defaults=/opt/app/avwobt4/etc/mysql/backup.cnf
+_database=avwob_production
+
+_mysql_dump_command=( mysqldump  --defaults-extra-file="$_defaults" --single-transaction --master-data  )
+_mysql_load_command=( mysql      --defaults-extra-file="$_defaults"                                     )
+
+main () {
   $(grab 'dry_run_flag master_port slave_port' from "$1"); shift
   local slave=${1:-}
 
-  [[ -z $slave ]] && die "$usage"
+  [[ -z $slave ]] && die "$_usage"
   stuff 'dry_run_flag master_port slave_port' into ''
-  msync "$slave" __
+  sync "$slave" __
 }
 
-msync () {
+sync () {
   local slave=$1; shift
   $(grab 'dry_run_flag master master_port slave_port' from "$@")
   local dump_command
   local load_command
 
-  load_command=( "${mysql_load_command[@]}" -h "$slave"           ${slave_port:+-P $slave_port}   "$database" )
-  dump_command=( "${mysql_dump_command[@]}" ${master:+-h $master} ${master_port:+-P $master_port} "$database" )
+  load_command=( "${_mysql_load_command[@]}" -h "$slave"           ${slave_port:+-P $slave_port}   "$_database" )
+  dump_command=( "${_mysql_dump_command[@]}" ${master:+-h $master} ${master_port:+-P $master_port} "$_database" )
 
   (( dry_run_flag )) && { put "${dump_command[*]} | ${load_command[*]}"; return ;}
   "${dump_command[@]}" | "${load_command[@]}"
 }
-
-msync_init () {
-  defaults=/opt/app/avwobt4/etc/mysql/backup.cnf
-  database=avwob_production
-
-  mysql_dump_command=( mysqldump  --defaults-extra-file="$defaults" --single-transaction --master-data  )
-  mysql_load_command=( mysql      --defaults-extra-file="$defaults"                                     )
-}
-
-msync_init
 
 sourced && return
 strict_mode on
@@ -63,5 +59,5 @@ get <<'EOS'
   ''  --slave-port  slave_port    "the port of the slave mysql instance"
 EOS
 
-$(parse_options __ "$@") || die "$usage" 0
-msync_main      __ "$@"  || die "$usage"
+$(parse_options __ "$@")
+main __ "$@"
