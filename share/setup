@@ -1,41 +1,46 @@
 #!/usr/bin/env bash
 
-setup_globals () {
-  usage='
-    Usage:  setup <context>
+usage='
+  Usage:  setup <context>
 
-      Setup the local host with dotfiles and standard configuration.
+    Setup the local host with dotfiles and standard configuration.
 
-      <context> is one of the contexts in dotfiles/contexts.'
+    <context> is one of the contexts in dotfiles/contexts.'
 
-  chmod='chmod --'
-  ln='ln --symbolic --force --'
-  mkdir='mkdir --parents --'
-  rm='rm --force --'
-}
+chmod='chmod --'
+ln='ln --symbolic --force --'
+mkdir='mkdir --parents --'
+rm='rm --force --'
 
-setup_main () {
+main () {
   local context=$1
-  local home=${2:-$HOME}
+
+  HOME=${2:-$HOME}
 
   echo "hushing login"
   touch .hushlogin
+
   echo "setting up git"
-  setup_git           "$home"
+  setup_git
+
   echo "setting up dotfiles"
-  setup_dotfiles      "$home" "$context"
+  setup_dotfiles "$context"
+
   echo "setting up vim configuration"
-  setup_vim           "$home"
+  setup_vim
+
   echo "setting up liquidprompt"
-  setup_liquidprompt  "$home"
+  setup_liquidprompt
+
   echo "setting up bashrc"
-  setup_bashrc        "$home"
+  setup_bashrc
+
   echo "setting up ssh"
-  setup_ssh           "$home"
+  setup_ssh
 }
 
 setup_bashrc () {
-  local home=$1
+  local home=${1:-$HOME}
   local bashrc
 
   bashrc=$home/.bashrc
@@ -46,12 +51,12 @@ setup_bashrc () {
       [[ -e $bashrc ]] && source "$bashrc"
       unset -v bashrc
     EOS
-  }
+  };:
 }
 
 setup_dotfiles () { (
-  local home=$1
-  local context=$2
+  local context=$1
+  local home=${2:-$HOME}
   local dotfiles
   local file
   local file_ary=()
@@ -73,7 +78,7 @@ setup_dotfiles () { (
 ) }
 
 setup_git () {
-  local home=$1
+  local home=${1:-$HOME}
   local git
   local local
 
@@ -91,7 +96,7 @@ setup_git () {
 }
 
 setup_liquidprompt () {
-  local home=$1
+  local home=${1:-$HOME}
   local config
   local dotfiles
   local liquidprompt
@@ -106,7 +111,7 @@ setup_liquidprompt () {
 }
 
 setup_ssh () {
-  local home=$1
+  local home=${1:-$HOME}
   local dotfiles
   local ssh
 
@@ -118,7 +123,7 @@ setup_ssh () {
 }
 
 setup_vim () { (
-  local home=$1
+  local home=${1:-$HOME}
   local vim
 
   vim=$home/.vim
@@ -137,9 +142,8 @@ strict_mode () {
   set -o pipefail
 }
 
-setup_globals
 sourced && return
 strict_mode on
 
 (( $# )) || { echo "$usage"; exit ;}
-setup_main "$@"
+main "$@"

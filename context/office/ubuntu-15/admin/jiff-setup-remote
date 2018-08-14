@@ -14,12 +14,16 @@ main () {
   local statements
 
   $(grab root fromns sremo)
-  statements="
-    mkdir -pm 700 \"\$HOME\"/.ssh
-    [[ -s \$HOME/.ssh/authorized_keys ]] && cat \"\$HOME\"/.ssh/authorized_keys >\"\$HOME\"/.ssh/authorized_keys2
-    echo '$(< $HOME/.ssh/authorized_keys)' >>\"\$HOME\"/.ssh/authorized_keys2
-    chmod 600 -- \"\$HOME\"/.ssh/authorized_keys2
-  "
+  get <<'  END'
+    mkdir --parents --mode=700 "$HOME"/.ssh
+    [[ -s $HOME/.ssh/authorized_keys ]] && (
+      cd "$HOME"/.ssh
+      rm --force authorized_keys2
+      cat authorized_keys >authorized_keys2
+      chmod 600 -- authorized_keys2
+    )
+  END
+  statements=$__
   put "creating authorized_keys2"
   ssh "$host" "$statements"
   ssh "$host" '! type git >/dev/null 2>&1 && [[ ! -e $HOME/git-2.7.4-static-avwob.tar.gz ]]' && {
@@ -28,10 +32,11 @@ main () {
   };:
   put "copying setup script"
   $rsyncp "$root"/share/setup "$host":
-  statements='
-    mkdir -pm 700 "$HOME"/dotfiles
+  get <<'  END'
+    mkdir --parents --mode=700 "$HOME"/dotfiles
     setfacl -m d:g::-,d:o:- "$HOME"/dotfiles
-  '
+  END
+  statements=$__
   put "setting dotfiles directory permissions"
   ssh "$host" "$statements"
   put "copying dotfiles"
